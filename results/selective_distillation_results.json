@@ -1,0 +1,30 @@
+{
+  "position_stats": {
+    "total_positions": 12766,
+    "rock_positions": 9600,
+    "nonrock_positions": 3166,
+    "rock_fraction": 0.7519974933416889
+  },
+  "kl_stats": {
+    "rock_mean_kl": 0.0703260336935344,
+    "nonrock_mean_kl": 0.04849191524787729,
+    "rock_kl_fraction": 0.8147294796184996,
+    "rock_cv": 3.952351912560936,
+    "nonrock_cv": 2.381744637394365
+  },
+  "speedup_estimation": {
+    "rock_density": 0.7519974933416889,
+    "estimated_speedup": 3.0940378090159966,
+    "paper_speedup": 1.4
+  },
+  "stability": {
+    "rock_normalized_variance": 9.302355472006377,
+    "nonrock_normalized_variance": 3.330937076250296
+  },
+  "paper_comparison": {
+    "note": "Paper uses OPD-trained checkpoints for actual training curves",
+    "rock_freeze_vs_baseline": "Paper shows Rock-Freeze matches baseline accuracy",
+    "rock_only_vs_baseline": "Paper shows Rock-Only significantly degrades accuracy",
+    "speedup": "Paper reports 1.4x speedup from Rock-Freeze"
+  }
+}
