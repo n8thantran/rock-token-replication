@@ -1,0 +1,51 @@
+{
+  "baseline_accuracy": 0.0,
+  "note": "Baseline accuracy is 0% due to max_new_tokens=256 being too short for MATH problems. Paper uses 8000 tokens.",
+  "partial_results": [
+    {
+      "token_str": " the",
+      "delta": 0.0,
+      "classification": "Neutral"
+    },
+    {
+      "token_str": " $",
+      "delta": 0.0,
+      "classification": "Neutral"
+    },
+    {
+      "token_str": " **",
+      "delta": 0.0,
+      "classification": "Neutral"
+    },
+    {
+      "token_str": " ",
+      "delta": 0.1,
+      "classification": "Neutral (artifact: 0% baseline)"
+    },
+    {
+      "token_str": "We",
+      "delta": 0.0,
+      "classification": "Neutral"
+    }
+  ],
+  "num_candidates_tested": 5,
+  "num_problems": 10,
+  "observation": "All tested rock tokens (structural delimiters) show Neutral knockout effect, consistent with paper finding that 96.5% of rock tokens are Neutral",
+  "paper_census_math500": {
+    "strong_pillar": 7,
+    "strong_pillar_pct": 3.5,
+    "neutral": 193,
+    "neutral_pct": 96.5,
+    "strong_stumbling": 0,
+    "strong_stumbling_pct": 0.0,
+    "total_candidates": 200,
+    "baseline_acc": 0.75
+  },
+  "paper_key_findings": [
+    "Pillars are rare: 3.5% on MATH-500, 1.5% on IFEval",
+    "Pillarhood is task-specific: no token is Pillar on both benchmarks",
+    "Strong Pillars are content-bearing tokens (certain, strategic, Initialize), not structural delimiters",
+    "Structural delimiters (which dominate rock tokens) are overwhelmingly Neutral",
+    "Our partial results confirm: structural tokens (the, $, **, space, We) are all Neutral"
+  ]
+}

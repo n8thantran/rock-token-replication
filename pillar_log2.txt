@@ -1,0 +1,18 @@
+/usr/local/lib/python3.14/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Testing 10 candidates on 15 problems
+Loading model...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   5%|▌         | 21/398 [00:00<00:01, 209.98it/s]Loading weights:  17%|█▋        | 69/398 [00:00<00:00, 357.76it/s]Loading weights:  27%|██▋       | 109/398 [00:00<00:00, 366.10it/s]Loading weights:  40%|████      | 161/398 [00:00<00:00, 424.70it/s]Loading weights:  53%|█████▎    | 210/398 [00:00<00:00, 446.99it/s]Loading weights:  64%|██████▍   | 256/398 [00:00<00:00, 447.58it/s]Loading weights:  76%|███████▌  | 301/398 [00:00<00:00, 446.26it/s]Loading weights:  87%|████████▋ | 346/398 [00:00<00:00, 440.13it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 432.15it/s]
+Computing baseline...
+Baseline:   0%|          | 0/15 [00:00<?, ?it/s]Baseline:   7%|▋         | 1/15 [00:12<02:52, 12.31s/it]Baseline:  13%|█▎        | 2/15 [00:19<02:04,  9.55s/it]Baseline:  20%|██        | 3/15 [00:25<01:35,  7.94s/it]Baseline:  27%|██▋       | 4/15 [00:32<01:22,  7.50s/it]Baseline:  33%|███▎      | 5/15 [00:44<01:29,  8.96s/it]Baseline:  40%|████      | 6/15 [00:50<01:11,  7.98s/it]Baseline:  47%|████▋     | 7/15 [00:56<00:59,  7.38s/it]Baseline:  53%|█████▎    | 8/15 [01:02<00:48,  6.96s/it]Baseline:  60%|██████    | 9/15 [01:08<00:40,  6.67s/it]Baseline:  67%|██████▋   | 10/15 [01:14<00:32,  6.48s/it]Baseline:  73%|███████▎  | 11/15 [01:20<00:25,  6.34s/it]Baseline:  80%|████████  | 12/15 [01:26<00:18,  6.26s/it]Baseline:  87%|████████▋ | 13/15 [01:32<00:12,  6.21s/it]Baseline:  93%|█████████▎| 14/15 [01:38<00:06,  6.10s/it]Baseline: 100%|██████████| 15/15 [01:44<00:00,  6.09s/it]Baseline: 100%|██████████| 15/15 [01:44<00:00,  6.99s/it]
+Baseline: 0.067 (1/15)
+
+Running knockouts...
+Knockouts:   0%|          | 0/10 [00:00<?, ?it/s]  [Neutral] " the": delta=+0.000 (ko_acc=0.067)
+Knockouts:  10%|█         | 1/10 [01:30<13:30, 90.06s/it]  [Neutral] " $": delta=+0.000 (ko_acc=0.067)
+Knockouts:  20%|██        | 2/10 [03:00<12:01, 90.13s/it]  [Neutral] " **": delta=+0.000 (ko_acc=0.067)
+Knockouts:  30%|███       | 3/10 [04:28<10:24, 89.24s/it]  [Neutral] " ": delta=+0.000 (ko_acc=0.067)
+Knockouts:  40%|████      | 4/10 [05:58<08:57, 89.59s/it]/usr/local/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-6916-49nmr6ba'}
+  warnings.warn(

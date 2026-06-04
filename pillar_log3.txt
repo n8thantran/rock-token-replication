@@ -1,0 +1,27 @@
+/usr/local/lib/python3.14/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Testing 10 candidates
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   5%|▌         | 20/398 [00:00<00:01, 199.84it/s]Loading weights:  18%|█▊        | 71/398 [00:00<00:00, 373.80it/s]Loading weights:  31%|███▏      | 125/398 [00:00<00:00, 444.37it/s]Loading weights:  45%|████▍     | 179/398 [00:00<00:00, 473.98it/s]Loading weights:  57%|█████▋    | 227/398 [00:00<00:00, 474.65it/s]Loading weights:  70%|███████   | 279/398 [00:00<00:00, 488.08it/s]Loading weights:  84%|████████▎ | 333/398 [00:00<00:00, 498.84it/s]Loading weights:  96%|█████████▌| 383/398 [00:00<00:00, 497.27it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 472.83it/s]
+Baseline...
+  Problem 0: wrong (gold=\left( 3, \frac{\pi}{2} \right)
+  Problem 1: wrong (gold=p - q)
+  Problem 2: wrong (gold=\frac{14}{3})
+  Problem 3: wrong (gold=9)
+  Problem 4: wrong (gold=\text{Evelyn})
+  Problem 5: wrong (gold=42)
+  Problem 6: wrong (gold=27)
+  Problem 7: wrong (gold=90^\circ)
+  Problem 8: wrong (gold=3\sqrt{13})
+  Problem 9: wrong (gold=4)
+Baseline: 0.000 (0/10)
+
+Knockouts...
+  [Neutral] " the": delta=+0.000
+  [Neutral] " $": delta=+0.000
+  [Neutral] " **": delta=+0.000
+  [Strong Stumbling] " ": delta=+0.100
+  [Neutral] "We": delta=+0.000
+/usr/local/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-7688-iimohogj'}
+  warnings.warn(
