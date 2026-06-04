@@ -19,9 +19,9 @@ with open(os.path.join(RESULTS_DIR, "pillar_knockout_results.json")) as f:
 
 kl_cov = rock["kl_coverage"]["100"]
 rock_mag = grad["rock"]["grad_magnitude"]["mean"]
-nonrock_mag = grad["nonrock"]["grad_magnitude"]["mean"]
+nonrock_mag = grad["high_kl"]["grad_magnitude"]["mean"]
 rock_align = grad["rock"]["cosine_alignment"]["mean"]
-nonrock_align = grad["nonrock"]["cosine_alignment"]["mean"]
+nonrock_align = grad["high_kl"]["cosine_alignment"]["mean"]
 
 fig, ax = plt.subplots(figsize=(16, 10))
 ax.axis('off')
@@ -32,10 +32,10 @@ data = [
     ['KL coverage at K=100', f'{kl_cov:.1%}', '~60%', '✓ (66.5% vs ~60%)'],
     ['Top categories', 'LaTeX, markdown,\ndiscourse, digits', 'LaTeX, markdown,\ndiscourse, digits', '✓'],
     ['Rock Score formula', 'R(v) = mean_KL × freq', 'R(v) = mean_KL × freq', '✓'],
-    ['Gradient magnitude\n(rock vs non-rock)', 
+    ['Gradient magnitude\n(rock vs high-KL non-rock)', 
      f'Rock: {rock_mag:.4f}\nNon-rock: {nonrock_mag:.4f}',
      'Rock < Non-rock\n(Figure 5a)', '✓' if rock_mag < nonrock_mag else '✗'],
-    ['Gradient alignment\n(rock vs non-rock)',
+    ['Gradient alignment\n(rock vs high-KL non-rock)',
      f'Rock: {rock_align:.4f}\nNon-rock: {nonrock_align:.4f}',
      'Rock > Non-rock\n(Figure 5b)', '~'],
     ['Pillar census\n(partial, 5/200)', 
@@ -80,8 +80,8 @@ print(f"  K=100 tokens via Rock Score R(v) = mean_KL × freq")
 print(f"  KL coverage: {kl_cov:.1%} (paper: ~60%)")
 print(f"  Categories: LaTeX delimiters, markdown, discourse markers, digits")
 print(f"\nRQ2: Gradient Geometry")
-print(f"  Rock grad magnitude: {rock_mag:.4f} < non-rock: {nonrock_mag:.4f}")
-print(f"  Rock alignment: {rock_align:.4f} vs non-rock: {nonrock_align:.4f}")
+print(f"  Rock grad magnitude: {rock_mag:.4f} < high-KL non-rock: {nonrock_mag:.4f}")
+print(f"  Rock alignment: {rock_align:.4f} vs high-KL non-rock: {nonrock_align:.4f}")
 print(f"\nRQ3: Selective Distillation")
 print(f"  Rock density: {dist['position_stats']['rock_fraction']:.1%}")
 print(f"  KL fraction from rocks: {dist['kl_stats']['rock_kl_fraction']:.1%}")
