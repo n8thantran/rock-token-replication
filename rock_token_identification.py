@@ -26,7 +26,7 @@ import time
 # Configuration
 STUDENT_MODEL = "Qwen/Qwen3-4B"
 TEACHER_MODEL = "Qwen/Qwen3-30B-A3B"
-NUM_PROBLEMS = 50  # Use subset for feasibility (paper uses 500)
+NUM_PROBLEMS = 30  # Use subset for feasibility (paper uses 500)
 MAX_NEW_TOKENS = 512  # Shorter for speed (paper uses longer)
 K_CUTOFF = 100  # Top-K Rock Tokens
 DEVICE = "cuda"
