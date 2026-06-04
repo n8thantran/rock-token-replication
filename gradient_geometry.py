@@ -1,7 +1,7 @@
 """
 Gradient Geometry Analysis for Rock Tokens
 
-Implements the gradient analysis from the paper (Section RQ1):
+Implements the gradient analysis from the paper (Section RQ1, Figure 2):
 - Per-token logit-gradient magnitude ||g_t|| by group (rock, high-KL, random)
 - Cosine alignment with balanced global gradient G_balanced
 - Contribution decomposition: contrib(t) = n_t * ||g_t|| * cos(g_t, G_balanced)
@@ -24,7 +24,6 @@ import gc
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 
 STUDENT_MODEL = "Qwen/Qwen3-4B"
 DEVICE = "cuda"
@@ -52,15 +51,58 @@ def load_cached_data():
     return rollout_data, rock_results, kl_data
 
 
+def classify_tokens(rock_results, kl_data):
+    """Classify tokens into rock, high-KL (rare), and random groups."""
+    # token_kl_data: {int_token_id: [list of kl values]}
+    token_kl_data = kl_data["token_kl_data"]
+    
+    # Rock token set
+    rock_token_ids = set()
+    for entry in rock_results["top_k_rock_tokens"]:
+        rock_token_ids.add(entry["token_id"])
+    
+    # Compute mean KL and frequency per token
+    token_mean_kl = {}
+    token_freq = {}
+    for tid, kl_vals in token_kl_data.items():
+        tid = int(tid) if isinstance(tid, str) else tid
+        token_mean_kl[tid] = float(np.mean(kl_vals))
+        token_freq[tid] = len(kl_vals)
+    
+    # High-KL tokens: high mean KL, low frequency (rare), NOT in rock set
+    # These are "learnable" tokens the paper contrasts with rocks
+    non_rock_rare = {tid: mkl for tid, mkl in token_mean_kl.items()
+                     if tid not in rock_token_ids and token_freq.get(tid, 0) <= 5}
+    sorted_high_kl = sorted(non_rock_rare.items(), key=lambda x: x[1], reverse=True)
+    high_kl_token_ids = set(tid for tid, _ in sorted_high_kl[:100])
+    
+    # Random tokens: not rock, not high-KL, moderate frequency
+    random_candidates = [tid for tid in token_mean_kl
+                        if tid not in rock_token_ids 
+                        and tid not in high_kl_token_ids
+                        and 3 <= token_freq.get(tid, 0) <= 50]
+    np.random.seed(42)
+    np.random.shuffle(random_candidates)
+    random_token_ids = set(random_candidates[:100])
+    
+    return rock_token_ids, high_kl_token_ids, random_token_ids, token_mean_kl, token_freq
+
+
 def compute_gradient_geometry():
     """
     Compute per-token gradient geometry for Rock vs non-Rock tokens.
     
     For each token type t with n_t occurrences, compute:
-    - Mean per-occurrence reverse-KL gradient in logit space: g_t = (1/n_t) sum_i g_i
-    - ||g_t||: gradient magnitude
-    - cos(g_t, G_balanced): alignment with balanced global gradient
-    - contrib(t) = n_t * ||g_t|| * cos(g_t, G_balanced)
+    - Mean per-occurrence gradient in logit space: g_bar_t = (1/n_t) sum_i g_i
+    - ||g_bar_t||: gradient magnitude
+    - cos(g_bar_t, G_balanced): alignment with balanced global gradient
+    - contrib(t) = n_t * ||g_bar_t|| * cos(g_bar_t, G_balanced)
+    
+    The gradient of reverse KL w.r.t. logits z at position i is:
+    dL/dz = p_student - p_teacher (approximately, for the relevant dimensions)
+    
+    Since we have student logprobs and approximate teacher logprobs from cached data,
+    we compute these gradients efficiently.
     """
     print("=" * 60)
     print("GRADIENT GEOMETRY ANALYSIS")
@@ -71,51 +113,18 @@ def compute_gradient_geometry():
     rollouts = rollout_data["rollouts"]
     student_data = rollout_data["student_data"]
     
-    # Get rock token set (top-100)
-    rock_token_ids = set()
-    rock_scores = {}
-    for entry in rock_results["top_k_rock_tokens"]:
-        rock_token_ids.add(entry["token_id"])
-        rock_scores[entry["token_id"]] = entry["rock_score"]
+    # Classify tokens
+    rock_ids, high_kl_ids, random_ids, token_mean_kl, token_freq = \
+        classify_tokens(rock_results, kl_data)
     
-    # Get per-token KL data
-    token_kl_data = kl_data["token_kl_data"]  # {token_id: {"kl_values": [...], "positions": [...]}}
+    all_target_ids = rock_ids | high_kl_ids | random_ids
     
-    # Classify tokens into groups:
-    # 1. Rock tokens (top-100 by rock score)
-    # 2. High-KL tokens (high mean KL but NOT in rock set - rare tokens)
-    # 3. Random tokens (everything else)
+    print(f"Rock tokens: {len(rock_ids)}")
+    print(f"High-KL rare tokens: {len(high_kl_ids)}")
+    print(f"Random tokens: {len(random_ids)}")
     
-    # Compute mean KL per token
-    token_mean_kl = {}
-    token_freq = {}
-    for tid_str, data in token_kl_data.items():
-        tid = int(tid_str) if isinstance(tid_str, str) else tid_str
-        kl_vals = data["kl_values"]
-        token_mean_kl[tid] = np.mean(kl_vals)
-        token_freq[tid] = len(kl_vals)
-    
-    # High-KL tokens: top mean KL but NOT in rock set (these are rare high-KL)
-    non_rock_tokens = {tid: mkl for tid, mkl in token_mean_kl.items() 
-                       if tid not in rock_token_ids and token_freq.get(tid, 0) <= 5}
-    sorted_high_kl = sorted(non_rock_tokens.items(), key=lambda x: x[1], reverse=True)
-    high_kl_token_ids = set(tid for tid, _ in sorted_high_kl[:100])
-    
-    # Random tokens: not rock, not high-KL, moderate frequency
-    random_token_ids = set()
-    for tid in token_mean_kl:
-        if tid not in rock_token_ids and tid not in high_kl_token_ids:
-            if 3 <= token_freq.get(tid, 0) <= 50:
-                random_token_ids.add(tid)
-    # Sample 100 random tokens
-    random_token_ids = set(list(random_token_ids)[:100])
-    
-    print(f"Rock tokens: {len(rock_token_ids)}")
-    print(f"High-KL rare tokens: {len(high_kl_token_ids)}")
-    print(f"Random tokens: {len(random_token_ids)}")
-    
-    # Load student model for gradient computation
-    print("\nLoading student model for gradient computation...")
+    # Load student model
+    print("\nLoading student model...")
     tokenizer = AutoTokenizer.from_pretrained(STUDENT_MODEL, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
         STUDENT_MODEL,
@@ -125,26 +134,33 @@ def compute_gradient_geometry():
     )
     model.eval()
     
-    # We need to compute gradients of the KL loss w.r.t. logits for each token position
-    # For reverse KL: L = sum_v p_student(v) * (log p_student(v) - log p_teacher(v))
-    # Gradient w.r.t. logits z: dL/dz = p_student * (log p_student - log p_teacher + 1) - p_student
-    # Simplified: dL/dz_v = p_s(v) * (log p_s(v) - log p_t(v)) for each vocab entry
-    # But we approximate: use the student logits and teacher logprobs from cached data
+    vocab_size = model.config.vocab_size
     
-    # Collect per-token-type gradients
-    # For memory efficiency, we'll compute gradient norms and alignment in logit space
-    # using a subset of rollouts
+    # We'll work with a reduced dimensionality for memory efficiency
+    # Instead of full vocab_size gradients, we track a compressed representation
+    # using the top-K dimensions that matter most
     
-    all_token_ids = rock_token_ids | high_kl_token_ids | random_token_ids
+    # Strategy: For each token occurrence, the gradient of cross-entropy loss 
+    # w.r.t. logits is: g = p_student - one_hot(target)
+    # For KL divergence: g = p_student - p_teacher
+    # We approximate p_teacher from the KL data we have
+    # 
+    # Since we only have KL values (not full teacher distributions), we use:
+    # g ≈ p_student - one_hot(generated_token) scaled by KL
+    # This captures the magnitude and direction of the distillation signal
     
-    # Per-token gradient accumulators
-    # We store the gradient vector for each token occurrence, then average
-    token_grad_sum = defaultdict(lambda: torch.zeros(model.config.vocab_size, dtype=torch.float32))
+    # For a more tractable analysis, we project gradients onto a 
+    # random subspace of dimension D_proj
+    D_proj = 2000  # Project to this dimension
+    torch.manual_seed(42)
+    proj_matrix = torch.randn(vocab_size, D_proj, dtype=torch.float32) / np.sqrt(D_proj)
+    # We'll apply this projection lazily
+    
+    # Per-token gradient accumulators (in projected space)
+    token_grad_sum = defaultdict(lambda: torch.zeros(D_proj, dtype=torch.float32))
     token_grad_count = defaultdict(int)
     
-    # Process a subset of rollouts
-    num_rollouts = min(15, len(rollouts))
-    
+    num_rollouts = min(20, len(rollouts))
     print(f"\nComputing per-token gradients for {num_rollouts} rollouts...")
     
     for r_idx in tqdm(range(num_rollouts), desc="Computing gradients"):
@@ -162,64 +178,43 @@ def compute_gradient_geometry():
         if gen_len < 2:
             continue
         
-        # Forward pass with gradient tracking on logits
-        with torch.enable_grad():
-            model.zero_grad()
+        # Forward pass to get student probabilities
+        with torch.no_grad():
             outputs = model(full_ids)
             logits = outputs.logits[0]  # [seq_len, vocab_size]
             
-            # For each generated position, compute KL gradient
             start_pos = prompt_len - 1
             end_pos = prompt_len + gen_len - 1
             gen_logits = logits[start_pos:end_pos]  # [gen_len, vocab_size]
-            
-            # Student log-probs
-            student_log_probs = torch.log_softmax(gen_logits.float(), dim=-1)
-            student_probs = torch.softmax(gen_logits.float(), dim=-1)
-            
-            # We don't have full teacher logprobs, so we approximate the gradient
-            # The key insight: for reverse KL, dL/dz = p_s - p_t (in simplified form)
-            # The gradient magnitude tells us how much the student disagrees with teacher
-            
-            # For each position, compute the gradient of the KL loss w.r.t. logits
-            # We use the student's own entropy gradient as a proxy
-            # (since we don't have teacher logprobs for all vocab entries)
-            
-            # Actually, let's compute the gradient of the student's log-prob of the 
-            # generated token, which is the most relevant gradient signal
-            for pos in range(min(gen_len, 200)):  # Limit positions per rollout
-                token_id = gen_ids[pos]
-                
-                if token_id not in all_token_ids:
-                    continue
-                
-                # Gradient of log p(token) w.r.t. logits at this position
-                # This is: e_token - softmax(logits)
-                # Which is the standard cross-entropy gradient
-                grad = torch.zeros(model.config.vocab_size, dtype=torch.float32)
-                probs = student_probs[pos].float().cpu()
-                grad = -probs.clone()
-                grad[token_id] += 1.0
-                
-                # This gives us the gradient direction for this token
-                # Scale by the KL divergence at this position (from cached data)
-                token_id_str = str(token_id)
-                if token_id_str in token_kl_data:
-                    kl_scale = token_mean_kl.get(token_id, 0.1)
-                else:
-                    kl_scale = 0.1
-                
-                grad = grad * kl_scale
-                
-                token_grad_sum[token_id] += grad
-                token_grad_count[token_id] += 1
+            student_probs = torch.softmax(gen_logits.float(), dim=-1).cpu()  # [gen_len, V]
         
-        # Clear GPU memory
-        del outputs, logits, gen_logits, student_log_probs, student_probs
+        del outputs, logits, gen_logits
         torch.cuda.empty_cache()
+        
+        # For each position, compute gradient and project
+        for pos in range(min(gen_len, 300)):  # Limit positions
+            token_id = gen_ids[pos]
+            
+            if token_id not in all_target_ids:
+                continue
+            
+            # Gradient of cross-entropy w.r.t. logits: p_student - one_hot(token)
+            # Scaled by KL to approximate distillation gradient magnitude
+            grad_full = student_probs[pos].clone()  # p_student
+            grad_full[token_id] -= 1.0  # subtract one_hot
+            
+            # Scale by mean KL for this token type
+            kl_scale = token_mean_kl.get(token_id, 0.1)
+            grad_full *= kl_scale
+            
+            # Project to lower dimension
+            grad_proj = grad_full @ proj_matrix  # [D_proj]
+            
+            token_grad_sum[token_id] += grad_proj
+            token_grad_count[token_id] += 1
     
     # Free model
-    del model
+    del model, proj_matrix
     gc.collect()
     torch.cuda.empty_cache()
     
@@ -227,16 +222,16 @@ def compute_gradient_geometry():
     
     # Compute mean gradients per token type
     token_mean_grad = {}
-    for tid in all_token_ids:
+    for tid in all_target_ids:
         if token_grad_count[tid] > 0:
             token_mean_grad[tid] = token_grad_sum[tid] / token_grad_count[tid]
     
-    # Compute balanced global gradient: G_balanced = sum_t g_bar_t
-    G_balanced = torch.zeros(list(token_mean_grad.values())[0].shape, dtype=torch.float32)
+    # Compute balanced global gradient: G_balanced = sum_t g_bar_t (equal weight per type)
+    G_balanced = torch.zeros(D_proj, dtype=torch.float32)
     for tid, grad in token_mean_grad.items():
         G_balanced += grad
     
-    G_balanced_norm = torch.norm(G_balanced)
+    G_balanced_norm = torch.norm(G_balanced).item()
     print(f"G_balanced norm: {G_balanced_norm:.6f}")
     
     # Compute per-token statistics
@@ -244,12 +239,16 @@ def compute_gradient_geometry():
     
     for tid, grad in token_mean_grad.items():
         grad_norm = torch.norm(grad).item()
-        cos_sim = (torch.dot(grad, G_balanced) / (torch.norm(grad) * G_balanced_norm + 1e-10)).item()
+        if grad_norm < 1e-12:
+            cos_sim = 0.0
+        else:
+            cos_sim = (torch.dot(grad, G_balanced) / (grad_norm * G_balanced_norm + 1e-10)).item()
         freq = token_grad_count[tid]
         contrib = freq * grad_norm * cos_sim
         
         entry = {
-            "token_id": tid,
+            "token_id": int(tid),
+            "token_str": tokenizer.decode([tid]),
             "grad_norm": grad_norm,
             "cos_sim": cos_sim,
             "freq": freq,
@@ -257,25 +256,26 @@ def compute_gradient_geometry():
             "mean_kl": token_mean_kl.get(tid, 0),
         }
         
-        if tid in rock_token_ids:
+        if tid in rock_ids:
             results["rock"].append(entry)
-        elif tid in high_kl_token_ids:
+        elif tid in high_kl_ids:
             results["high_kl"].append(entry)
-        elif tid in random_token_ids:
+        elif tid in random_ids:
             results["random"].append(entry)
     
     # Print summary statistics
     for group_name, entries in results.items():
         if not entries:
+            print(f"\n{group_name.upper()}: No data")
             continue
         norms = [e["grad_norm"] for e in entries]
         cosines = [e["cos_sim"] for e in entries]
         contribs = [e["contrib"] for e in entries]
         
         print(f"\n{group_name.upper()} tokens ({len(entries)} types):")
-        print(f"  Gradient magnitude: median={np.median(norms):.4f}, mean={np.mean(norms):.4f}")
-        print(f"  Cosine alignment:   median={np.median(cosines):.4f}, mean={np.mean(cosines):.4f}")
-        print(f"  Contribution:       median={np.median(contribs):.4f}, mean={np.mean(contribs):.4f}")
+        print(f"  Gradient magnitude: median={np.median(norms):.6f}, mean={np.mean(norms):.6f}")
+        print(f"  Cosine alignment:   median={np.median(cosines):.6f}, mean={np.mean(cosines):.6f}")
+        print(f"  Contribution:       median={np.median(contribs):.6f}, mean={np.mean(contribs):.6f}")
     
     return results
 
@@ -284,75 +284,36 @@ def create_gradient_visualizations(results):
     """Create gradient geometry visualizations matching paper Figure 2."""
     print("\nCreating gradient geometry visualizations...")
     
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
     
     colors = {"rock": "#4472C4", "high_kl": "#ED7D31", "random": "#A5A5A5"}
     labels = {"rock": "Rock Tokens", "high_kl": "High-KL (Rare)", "random": "Random"}
     
-    # Panel (a): Gradient magnitude distribution
-    ax = axes[0]
-    for group in ["rock", "high_kl", "random"]:
-        if results[group]:
-            norms = [e["grad_norm"] for e in results[group]]
-            ax.hist(norms, bins=30, alpha=0.6, color=colors[group], label=labels[group], density=True)
-    ax.set_xlabel("Gradient Magnitude ||g_t||", fontsize=11)
-    ax.set_ylabel("Density", fontsize=11)
-    ax.set_title("(a) Per-Token Gradient Magnitude", fontsize=12, fontweight='bold')
-    ax.legend(fontsize=9)
-    ax.set_yscale('log')
-    
-    # Panel (b): Cosine alignment distribution
-    ax = axes[1]
-    for group in ["rock", "high_kl", "random"]:
-        if results[group]:
-            cosines = [e["cos_sim"] for e in results[group]]
-            ax.hist(cosines, bins=30, alpha=0.6, color=colors[group], label=labels[group], density=True)
-    ax.set_xlabel("cos(g_t, G_balanced)", fontsize=11)
-    ax.set_ylabel("Density", fontsize=11)
-    ax.set_title("(b) Alignment with Global Gradient", fontsize=12, fontweight='bold')
-    ax.legend(fontsize=9)
-    
-    # Panel (c): Contribution decomposition (scatter: magnitude vs alignment)
-    ax = axes[2]
-    for group in ["rock", "high_kl", "random"]:
-        if results[group]:
-            norms = [e["grad_norm"] for e in results[group]]
-            cosines = [e["cos_sim"] for e in results[group]]
-            freqs = [e["freq"] for e in results[group]]
-            ax.scatter(norms, cosines, s=[max(3, f*2) for f in freqs], 
-                      alpha=0.5, color=colors[group], label=labels[group], edgecolors='none')
-    ax.set_xlabel("Gradient Magnitude ||g_t||", fontsize=11)
-    ax.set_ylabel("cos(g_t, G_balanced)", fontsize=11)
-    ax.set_title("(c) Magnitude vs Alignment", fontsize=12, fontweight='bold')
-    ax.legend(fontsize=9)
-    ax.axhline(y=0, color='gray', linestyle='--', alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(RESULTS_DIR, "gradient_geometry.png"), dpi=150, bbox_inches='tight')
-    plt.close()
-    print("  Saved gradient_geometry.png")
-    
-    # Also create a box plot comparison
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    
-    # Box plot of gradient magnitudes
+    # Panel (a): Gradient magnitude box plot (matching paper style)
     ax = axes[0]
     data_mag = []
-    group_labels = []
+    group_labels_list = []
+    color_list = []
     for group in ["rock", "high_kl", "random"]:
         if results[group]:
             norms = [e["grad_norm"] for e in results[group]]
             data_mag.append(norms)
-            group_labels.append(labels[group])
+            group_labels_list.append(labels[group])
+            color_list.append(colors[group])
     
-    bp = ax.boxplot(data_mag, labels=group_labels, patch_artist=True, showfliers=True)
-    for patch, group in zip(bp['boxes'], ["rock", "high_kl", "random"]):
-        patch.set_facecolor(colors[group])
-        patch.set_alpha(0.6)
-    ax.set_ylabel("Gradient Magnitude ||g_t||", fontsize=11)
-    ax.set_title("(a) Gradient Magnitude by Group", fontsize=12, fontweight='bold')
+    bp = ax.boxplot(data_mag, labels=[l.replace(" ", "\n") for l in group_labels_list], 
+                    patch_artist=True, showfliers=False, widths=0.6)
+    for patch, c in zip(bp['boxes'], color_list):
+        patch.set_facecolor(c)
+        patch.set_alpha(0.7)
+    for median in bp['medians']:
+        median.set_color('black')
+        median.set_linewidth(2)
+    ax.set_ylabel("||ḡ_t||", fontsize=12)
+    ax.set_title("(a) Gradient Magnitude", fontsize=13, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=9)
     
-    # Box plot of cosine alignment
+    # Panel (b): Cosine alignment box plot
     ax = axes[1]
     data_cos = []
     for group in ["rock", "high_kl", "random"]:
@@ -360,18 +321,61 @@ def create_gradient_visualizations(results):
             cosines = [e["cos_sim"] for e in results[group]]
             data_cos.append(cosines)
     
-    bp = ax.boxplot(data_cos, labels=group_labels, patch_artist=True, showfliers=True)
-    for patch, group in zip(bp['boxes'], ["rock", "high_kl", "random"]):
-        patch.set_facecolor(colors[group])
-        patch.set_alpha(0.6)
-    ax.set_ylabel("cos(g_t, G_balanced)", fontsize=11)
-    ax.set_title("(b) Gradient Alignment by Group", fontsize=12, fontweight='bold')
+    bp = ax.boxplot(data_cos, labels=[l.replace(" ", "\n") for l in group_labels_list],
+                    patch_artist=True, showfliers=False, widths=0.6)
+    for patch, c in zip(bp['boxes'], color_list):
+        patch.set_facecolor(c)
+        patch.set_alpha(0.7)
+    for median in bp['medians']:
+        median.set_color('black')
+        median.set_linewidth(2)
+    ax.set_ylabel("cos(ḡ_t, G_balanced)", fontsize=12)
+    ax.set_title("(b) Alignment with Global Gradient", fontsize=13, fontweight='bold')
+    ax.axhline(y=0, color='gray', linestyle='--', alpha=0.3)
+    ax.tick_params(axis='x', labelsize=9)
+    
+    # Panel (c): Scatter plot - magnitude vs alignment, size by frequency
+    ax = axes[2]
+    for group in ["rock", "high_kl", "random"]:
+        if results[group]:
+            norms = [e["grad_norm"] for e in results[group]]
+            cosines = [e["cos_sim"] for e in results[group]]
+            freqs = [e["freq"] for e in results[group]]
+            ax.scatter(norms, cosines, 
+                      s=[max(5, min(f*3, 200)) for f in freqs],
+                      alpha=0.5, color=colors[group], label=labels[group], 
+                      edgecolors='none')
+    ax.set_xlabel("||ḡ_t||", fontsize=12)
+    ax.set_ylabel("cos(ḡ_t, G_balanced)", fontsize=12)
+    ax.set_title("(c) Magnitude vs Alignment", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=9, loc='upper right')
     ax.axhline(y=0, color='gray', linestyle='--', alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(RESULTS_DIR, "gradient_boxplots.png"), dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(RESULTS_DIR, "gradient_geometry.png"), dpi=150, bbox_inches='tight')
     plt.close()
-    print("  Saved gradient_boxplots.png")
+    print("  Saved gradient_geometry.png")
+    
+    # Create a contribution decomposition figure
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    
+    for group in ["rock", "high_kl", "random"]:
+        if results[group]:
+            entries = sorted(results[group], key=lambda x: x["contrib"], reverse=True)
+            contribs = [e["contrib"] for e in entries]
+            ax.bar(range(len(contribs)), contribs, alpha=0.6, 
+                  color=colors[group], label=labels[group])
+    
+    ax.set_xlabel("Token Type Rank", fontsize=12)
+    ax.set_ylabel("Contribution = n_t · ||ḡ_t|| · cos(ḡ_t, G_bal)", fontsize=11)
+    ax.set_title("Per-Token-Type Contribution to Global Gradient", fontsize=13, fontweight='bold')
+    ax.legend(fontsize=10)
+    ax.axhline(y=0, color='gray', linestyle='--', alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, "gradient_contribution.png"), dpi=150, bbox_inches='tight')
+    plt.close()
+    print("  Saved gradient_contribution.png")
 
 
 def save_gradient_results(results):
@@ -381,18 +385,34 @@ def save_gradient_results(results):
         if entries:
             norms = [e["grad_norm"] for e in entries]
             cosines = [e["cos_sim"] for e in entries]
+            contribs = [e["contrib"] for e in entries]
             output[group] = {
                 "count": len(entries),
                 "grad_magnitude": {
                     "median": float(np.median(norms)),
                     "mean": float(np.mean(norms)),
                     "std": float(np.std(norms)),
+                    "min": float(np.min(norms)),
+                    "max": float(np.max(norms)),
                 },
                 "cosine_alignment": {
                     "median": float(np.median(cosines)),
                     "mean": float(np.mean(cosines)),
                     "std": float(np.std(cosines)),
+                    "min": float(np.min(cosines)),
+                    "max": float(np.max(cosines)),
                 },
+                "contribution": {
+                    "median": float(np.median(contribs)),
+                    "mean": float(np.mean(contribs)),
+                    "total": float(np.sum(contribs)),
+                },
+                "top_5_by_contribution": sorted(
+                    [{"token": e["token_str"], "contrib": e["contrib"], 
+                      "grad_norm": e["grad_norm"], "cos_sim": e["cos_sim"]}
+                     for e in entries],
+                    key=lambda x: abs(x["contrib"]), reverse=True
+                )[:5],
             }
     
     with open(os.path.join(RESULTS_DIR, "gradient_geometry_results.json"), "w") as f:
@@ -404,4 +424,4 @@ if __name__ == "__main__":
     results = compute_gradient_geometry()
     create_gradient_visualizations(results)
     save_gradient_results(results)
-    print("\nGradient geometry analysis complete!")
+    print("\n✓ Gradient geometry analysis complete!")
