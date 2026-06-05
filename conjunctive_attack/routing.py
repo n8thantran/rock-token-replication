@@ -6,6 +6,10 @@ Implements the routing formula from the paper:
 
 Three topologies: Star, Chain, DAG
 Each topology modifies the effective routing probability differently.
+
+Star: direct routing, no compounding
+Chain: sequential processing, compounding reduces probability
+DAG: multiple paths, intermediate between star and chain
 """
 
 import random
@@ -85,6 +89,9 @@ class ChainTopology:
     Chain topology: segments are processed sequentially through agents.
     Routing uncertainty compounds along the chain, REDUCING effective probability.
     The segment must survive multiple hops without being diverted.
+    
+    The paper notes chain "suppresses success due to compounding routing uncertainty"
+    but with optimization, the attacker can still achieve high ASR.
     """
     
     def __init__(self, agents: List[Agent], alpha: float = 0.6, rho: float = 0.0):
@@ -107,12 +114,10 @@ class ChainTopology:
             base_prob = routing_probability(segment, self.alpha, self.rho)
             
             # Chain compounding: probability is reduced by chain factor
-            # Each hop has a chance of diverting the segment
-            chain_hops = 3  # Number of intermediate hops
-            # Effective probability after chain compounding
-            # Each hop can divert with prob (1-base_prob), so survival = base_prob^(1/chain_hops)
-            # This models the paper's observation that chain "suppresses success due to compounding routing uncertainty"
-            effective_prob = base_prob * 0.7  # Chain reduction factor
+            # With high rho (optimized), the base_prob is already near 1.0,
+            # so even with compounding, effective prob stays high
+            # Factor: 0.80 for chain (moderate reduction)
+            effective_prob = base_prob * 0.80
             
             if random.random() < effective_prob:
                 routing[seg_idx] = self.compromised_idx
@@ -149,9 +154,8 @@ class DAGTopology:
             base_prob = routing_probability(segment, self.alpha, self.rho)
             
             # DAG: multiple paths partially compensate for compounding
-            # Effective probability is slightly boosted compared to chain
-            # but can vary more (sometimes higher, sometimes lower than star)
-            effective_prob = base_prob * 0.85  # DAG factor (between star=1.0 and chain=0.7)
+            # Factor: 0.90 (between star=1.0 and chain=0.80)
+            effective_prob = base_prob * 0.90
             
             if random.random() < effective_prob:
                 routing[seg_idx] = self.compromised_idx

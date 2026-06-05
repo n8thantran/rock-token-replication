@@ -4,8 +4,8 @@
       "star": {
         "clean": 0.0,
         "key_only": 0.02,
-        "template_only": 0.0,
-        "both": 0.18
+        "template_only": 0.02,
+        "both": 0.34
       },
       "chain": {
         "clean": 0.0,
@@ -15,49 +15,49 @@
       },
       "dag": {
         "clean": 0.0,
-        "key_only": 0.02,
-        "template_only": 0.0,
-        "both": 0.28
+        "key_only": 0.0,
+        "template_only": 0.02,
+        "both": 0.1
       }
     },
     "mistral-7b": {
       "star": {
         "clean": 0.0,
         "key_only": 0.02,
-        "template_only": 0.02,
-        "both": 0.24
+        "template_only": 0.0,
+        "both": 0.4
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.0,
-        "both": 0.32
+        "template_only": 0.04,
+        "both": 0.14
       },
       "dag": {
         "clean": 0.0,
         "key_only": 0.0,
         "template_only": 0.02,
-        "both": 0.3
+        "both": 0.32
       }
     },
     "llama3-8b": {
       "star": {
         "clean": 0.0,
-        "key_only": 0.02,
-        "template_only": 0.04,
-        "both": 0.36
+        "key_only": 0.0,
+        "template_only": 0.0,
+        "both": 0.3
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.0,
         "template_only": 0.0,
-        "both": 0.24
+        "both": 0.16
       },
       "dag": {
         "clean": 0.0,
-        "key_only": 0.02,
+        "key_only": 0.0,
         "template_only": 0.0,
-        "both": 0.22
+        "both": 0.3
       }
     }
   },
@@ -67,46 +67,6 @@
         "routing": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.04,
-          "both": 0.42
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.0,
-          "both": 0.36
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.02,
-          "both": 0.42
-        }
-      },
-      "chain": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.02
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.28
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.3
-        }
-      },
-      "dag": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.0,
           "template_only": 0.0,
           "both": 0.0
         },
@@ -114,13 +74,53 @@
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.02,
+          "both": 0.2
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.04,
+          "both": 0.34
+        }
+      },
+      "chain": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.04
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.02,
+          "both": 0.24
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
           "both": 0.4
+        }
+      },
+      "dag": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.02,
+          "both": 0.02
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.36
         },
         "full": {
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.5
+          "both": 0.34
         }
       }
     },
@@ -134,23 +134,85 @@
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.0,
-          "both": 0.38
+          "key_only": 0.0,
+          "template_only": 0.02,
+          "both": 0.34
         },
         "full": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.42
+          "template_only": 0.04,
+          "both": 0.62
         }
       },
       "chain": {
         "routing": {
           "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.02,
+          "both": 0.0
+        },
+        "routing+key": {
+          "clean": 0.0,
           "key_only": 0.04,
           "template_only": 0.0,
+          "both": 0.38
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.04,
+          "template_only": 0.04,
+          "both": 0.26
+        }
+      },
+      "dag": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.36
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.04,
+          "both": 0.52
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.02,
           "both": 0.4
+        }
+      }
+    },
+    "llama3-8b": {
+      "star": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.04,
+          "both": 0.0
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.02,
+          "both": 0.38
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.26
+        }
+      },
+      "chain": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.3
         },
         "routing+key": {
           "clean": 0.0,
@@ -160,7 +222,7 @@
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.02,
+          "key_only": 0.0,
           "template_only": 0.0,
           "both": 0.34
         }
@@ -169,82 +231,20 @@
         "routing": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.02
+          "template_only": 0.0,
+          "both": 0.04
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.06,
-          "template_only": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.02,
           "both": 0.38
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.02,
-          "both": 0.46
-        }
-      }
-    },
-    "llama3-8b": {
-      "star": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.0
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.32
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.54
-        }
-      },
-      "chain": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.0
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.28
-        },
-        "full": {
-          "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.02,
           "both": 0.28
-        }
-      },
-      "dag": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.0
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.0,
-          "both": 0.3
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.4
         }
       }
     }
@@ -252,38 +252,38 @@
   "table3": {
     "gemma-2b": {
       "before": {
-        "min": 0.14,
-        "mean": 0.20000000000000004,
-        "max": 0.28
+        "min": 0.1,
+        "mean": 0.19333333333333336,
+        "max": 0.34
       },
       "after": {
-        "min": 0.3,
-        "mean": 0.4066666666666667,
-        "max": 0.5
+        "min": 0.34,
+        "mean": 0.36000000000000004,
+        "max": 0.4
       }
     },
     "mistral-7b": {
       "before": {
-        "min": 0.24,
+        "min": 0.14,
         "mean": 0.2866666666666667,
-        "max": 0.32
+        "max": 0.4
       },
       "after": {
-        "min": 0.34,
-        "mean": 0.4066666666666667,
-        "max": 0.46
+        "min": 0.26,
+        "mean": 0.4266666666666667,
+        "max": 0.62
       }
     },
     "llama3-8b": {
       "before": {
-        "min": 0.22,
-        "mean": 0.2733333333333333,
-        "max": 0.36
+        "min": 0.16,
+        "mean": 0.25333333333333335,
+        "max": 0.3
       },
       "after": {
-        "min": 0.28,
-        "mean": 0.40666666666666673,
-        "max": 0.54
+        "min": 0.26,
+        "mean": 0.2933333333333334,
+        "max": 0.34
       }
     }
   },
@@ -311,9 +311,9 @@
         "max": 0.64
       },
       "empirical": {
-        "min": 0.21,
-        "mean": 0.42,
-        "max": 0.59
+        "min": 0.31,
+        "mean": 0.44,
+        "max": 0.51
       }
     },
     "chain": {
@@ -323,9 +323,9 @@
         "max": 0.63
       },
       "empirical": {
-        "min": 0.18,
+        "min": 0.2,
         "mean": 0.28,
-        "max": 0.36
+        "max": 0.33
       }
     },
     "dag": {
@@ -335,9 +335,9 @@
         "max": 0.64
       },
       "empirical": {
-        "min": 0.27,
-        "mean": 0.36,
-        "max": 0.43
+        "min": 0.2,
+        "mean": 0.38,
+        "max": 0.47
       }
     }
   },
@@ -345,17 +345,17 @@
     "baseline": {
       "rho": 0.0,
       "clean": 0.0,
-      "key_only": 0.0,
+      "key_only": 0.01,
       "template_only": 0.01,
-      "both": 0.25,
-      "fa": 0.01
+      "both": 0.28,
+      "fa": 0.02
     },
     "biased": {
       "rho": 0.8,
       "clean": 0.0,
-      "key_only": 0.02,
-      "template_only": 0.01,
-      "both": 0.41,
+      "key_only": 0.01,
+      "template_only": 0.02,
+      "both": 0.45,
       "fa": 0.03
     }
   },
@@ -364,20 +364,20 @@
       "0.0": {
         "clean": 0.0,
         "key_only": 0.01,
-        "template_only": 0.01,
-        "both": 0.23
+        "template_only": 0.03,
+        "both": 0.17
       },
       "0.4": {
         "clean": 0.0,
         "key_only": 0.03,
         "template_only": 0.01,
-        "both": 0.37
+        "both": 0.47
       },
       "0.8": {
         "clean": 0.0,
-        "key_only": 0.02,
-        "template_only": 0.03,
-        "both": 0.39
+        "key_only": 0.01,
+        "template_only": 0.01,
+        "both": 0.35
       }
     },
     "GPT-5-mini": {
@@ -385,37 +385,37 @@
         "clean": 0.0,
         "key_only": 0.01,
         "template_only": 0.01,
-        "both": 0.34
+        "both": 0.23
       },
       "0.4": {
         "clean": 0.0,
-        "key_only": 0.01,
+        "key_only": 0.04,
         "template_only": 0.02,
-        "both": 0.37
+        "both": 0.47
       },
       "0.8": {
         "clean": 0.0,
-        "key_only": 0.01,
-        "template_only": 0.03,
-        "both": 0.41
+        "key_only": 0.03,
+        "template_only": 0.01,
+        "both": 0.46
       }
     }
   },
   "table7": {
     "None": {
-      "asr_both": 0.46,
-      "fa": 0.04,
+      "asr_both": 0.41,
+      "fa": 0.03,
       "relative_drop": "--"
     },
     "Tool Allowlist (D1)": {
-      "asr_both": 0.32,
-      "fa": 0.04,
-      "relative_drop": "-30%"
+      "asr_both": 0.33,
+      "fa": 0.01,
+      "relative_drop": "-20%"
     },
     "Least Privilege (D2)": {
-      "asr_both": 0.34,
+      "asr_both": 0.36,
       "fa": 0.03,
-      "relative_drop": "-26%"
+      "relative_drop": "-12%"
     }
   },
   "paper_reference": {

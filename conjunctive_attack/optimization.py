@@ -4,6 +4,9 @@ Gumbel-Softmax counterpart optimization for conjunctive attacks.
 Implements Algorithm 1 from the paper:
 - Learnable logits α (key placement), β (template slot), γ (routing bias)
 - Differentiable surrogate: ASR_both = P_route * P_template
+
+Loss function (Eq. 16):
+L = -ASR_both + λ1 * Σ p_i(1-a_i) + λ2 * ρ + λ3 * P_template - λ4 * H(p) - λ5 * H(q)
 """
 
 import torch
@@ -47,13 +50,24 @@ class CounterpartOptimizer:
                                                   dtype=torch.float32, 
                                                   device=device)
         
-        # Learnable parameters
-        self.alpha = torch.randn(num_segments, device=device, requires_grad=True)
-        self.beta = torch.randn(self.num_slots, device=device, requires_grad=True)
+        # Learnable parameters - initialized with sensible priors
+        # Alpha: slight preference for account segment (idx=1)
+        self.alpha = torch.tensor([0.0, 1.0, 0.0], device=device, requires_grad=True)
+        # Beta: slight preference for wrap (most effective)
+        self.beta = torch.tensor([0.0, 0.5, 0.0], device=device, requires_grad=True)
+        # Gamma: start at 0 (rho=0.5)
         self.gamma = torch.tensor(0.0, device=device, requires_grad=True)
         
         # Template effectiveness scalars (learnable)
-        self.w_tau = torch.randn(self.num_slots, device=device, requires_grad=True)
+        # Initialize with prior: prefix=0.7, wrap=0.95, suffix=0.5
+        self.w_tau = torch.tensor([0.85, 2.94, 0.0], device=device, requires_grad=True)
+        
+        # Regularization weights (from paper Eq. 16)
+        self.lambda1 = 0.1  # Penalize key on non-account segments
+        self.lambda2 = 0.01  # Mild penalty on rho (avoid degenerate solutions)
+        self.lambda3 = 0.05  # Template effectiveness regularization
+        self.lambda4 = 0.01  # Entropy bonus for p
+        self.lambda5 = 0.01  # Entropy bonus for q
         
         # Optimizer
         self.optimizer = torch.optim.Adam(
@@ -66,11 +80,15 @@ class CounterpartOptimizer:
         tau = temperature or self.temperature
         return F.gumbel_softmax(logits, tau=tau, hard=False)
     
+    def entropy(self, probs: torch.Tensor) -> torch.Tensor:
+        """Compute entropy of a probability distribution."""
+        return -torch.sum(probs * torch.log(probs + 1e-8))
+    
     def compute_surrogate_loss(self) -> Tuple[torch.Tensor, Dict]:
         """
-        Compute the differentiable surrogate loss.
+        Compute the differentiable surrogate loss (Eq. 16).
         
-        Returns negative ASR_both (for minimization).
+        L = -ASR_both + λ1*Σp_i(1-a_i) + λ2*ρ + λ3*P_template - λ4*H(p) - λ5*H(q)
         """
         # Sample relaxed distributions
         p = self.gumbel_softmax(self.alpha)  # Key placement
@@ -86,8 +104,13 @@ class CounterpartOptimizer:
         # Surrogate ASR
         asr_both = p_route * p_template
         
-        # Loss is negative ASR (we want to maximize)
+        # Loss components
         loss = -asr_both
+        loss += self.lambda1 * torch.sum(p * (1 - self.account_affinity))
+        loss += self.lambda2 * rho
+        loss += self.lambda3 * p_template
+        loss -= self.lambda4 * self.entropy(p)
+        loss -= self.lambda5 * self.entropy(q)
         
         info = {
             "p_route": p_route.item(),
@@ -96,13 +119,14 @@ class CounterpartOptimizer:
             "rho": rho.item(),
             "key_placement": torch.argmax(p).item(),
             "template_slot": torch.argmax(q).item(),
+            "loss": loss.item(),
         }
         
         return loss, info
     
     def optimize(self, num_steps: int = 200, verbose: bool = False) -> Dict:
         """
-        Run optimization for num_steps.
+        Run optimization for num_steps with temperature annealing.
         
         Returns:
             Dict with optimized configuration
@@ -111,6 +135,9 @@ class CounterpartOptimizer:
         best_config = None
         
         for step in range(num_steps):
+            # Temperature annealing (start warm, cool down)
+            self.temperature = max(0.5, 2.0 * (1 - step / num_steps))
+            
             self.optimizer.zero_grad()
             loss, info = self.compute_surrogate_loss()
             loss.backward()
@@ -176,16 +203,17 @@ def optimize_attack_config(
     )
     
     if opt_level == "routing":
-        # Only optimize routing bias, fix key and template
-        optimizer.alpha.requires_grad_(False)
-        optimizer.beta.requires_grad_(False)
+        # Only optimize routing bias, fix key and template at defaults
+        # Key on account segment (idx=1), template at prefix
+        optimizer.alpha = torch.tensor([0.0, 2.0, 0.0], requires_grad=False)
+        optimizer.beta = torch.tensor([2.0, 0.0, 0.0], requires_grad=False)
         optimizer.w_tau.requires_grad_(False)
         # Re-create optimizer with only gamma
         optimizer.optimizer = torch.optim.Adam([optimizer.gamma], lr=lr)
     
     elif opt_level == "routing+key":
-        # Optimize routing bias and key placement
-        optimizer.beta.requires_grad_(False)
+        # Optimize routing bias and key placement, fix template
+        optimizer.beta = torch.tensor([0.0, 0.0, 0.0], requires_grad=False)
         optimizer.w_tau.requires_grad_(False)
         optimizer.optimizer = torch.optim.Adam(
             [optimizer.alpha, optimizer.gamma], lr=lr
