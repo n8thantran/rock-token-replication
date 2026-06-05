@@ -2,106 +2,106 @@
   "table1_both": {
     "gemma-2b": {
       "star": {
-        "simulation": 0.35,
+        "simulation": 0.3,
         "paper": 0.2,
-        "diff": 0.15
+        "diff": 0.1
       },
       "chain": {
-        "simulation": 0.24,
+        "simulation": 0.36,
         "paper": 0.1,
-        "diff": 0.14
+        "diff": 0.26
       },
       "dag": {
-        "simulation": 0.24,
+        "simulation": 0.27,
         "paper": 0.4,
-        "diff": -0.16
+        "diff": -0.13
       }
     },
     "mistral-7b": {
       "star": {
-        "simulation": 0.4,
+        "simulation": 0.53,
         "paper": 0.4,
-        "diff": 0.0
+        "diff": 0.13
       },
       "chain": {
-        "simulation": 0.27,
+        "simulation": 0.28,
         "paper": 0.4,
-        "diff": -0.13
+        "diff": -0.12
       },
       "dag": {
-        "simulation": 0.42,
+        "simulation": 0.39,
         "paper": 0.1,
-        "diff": 0.32
+        "diff": 0.29
       }
     },
     "llama3-8b": {
       "star": {
-        "simulation": 0.25,
+        "simulation": 0.39,
         "paper": 0.2,
-        "diff": 0.05
+        "diff": 0.19
       },
       "chain": {
-        "simulation": 0.3,
-        "paper": 0.4,
-        "diff": -0.1
-      },
-      "dag": {
         "simulation": 0.34,
         "paper": 0.4,
         "diff": -0.06
+      },
+      "dag": {
+        "simulation": 0.31,
+        "paper": 0.4,
+        "diff": -0.09
       }
     }
   },
   "table2_full_both": {
     "gemma-2b": {
       "star": {
-        "simulation": 0.57,
+        "simulation": 0.5,
         "paper": 0.6,
-        "diff": -0.03
+        "diff": -0.1
       },
       "chain": {
-        "simulation": 0.51,
+        "simulation": 0.44,
         "paper": 0.8,
-        "diff": -0.29
+        "diff": -0.36
       },
       "dag": {
-        "simulation": 0.46,
+        "simulation": 0.45,
         "paper": 1.0,
-        "diff": -0.54
+        "diff": -0.55
       }
     },
     "mistral-7b": {
       "star": {
-        "simulation": 0.7,
+        "simulation": 0.74,
         "paper": 0.9,
-        "diff": -0.2
+        "diff": -0.16
       },
       "chain": {
-        "simulation": 0.56,
+        "simulation": 0.52,
         "paper": 1.0,
-        "diff": -0.44
+        "diff": -0.48
       },
       "dag": {
-        "simulation": 0.55,
+        "simulation": 0.49,
         "paper": 1.0,
-        "diff": -0.45
+        "diff": -0.51
       }
     },
     "llama3-8b": {
       "star": {
-        "simulation": 0.68,
+        "simulation": 0.54,
         "paper": 0.7,
-        "diff": -0.02
+        "diff": -0.16
       },
       "chain": {
-        "simulation": 0.51,
+        "simulation": 0.5,
         "paper": 0.8,
-        "diff": -0.29
+        "diff": -0.3
       },
       "dag": {
-        "simulation": 0.47,
+        "simulation": 0.58,
         "paper": 1.0,
-        "diff": -0.53
+        "diff": -0.42
       }
     }
   },
