@@ -4,60 +4,60 @@
       "star": {
         "clean": 0.0,
         "key_only": 0.02,
-        "template_only": 0.02,
-        "both": 0.34
+        "template_only": 0.01,
+        "both": 0.27
       },
       "chain": {
         "clean": 0.0,
-        "key_only": 0.0,
-        "template_only": 0.0,
-        "both": 0.14
+        "key_only": 0.01,
+        "template_only": 0.02,
+        "both": 0.29
       },
       "dag": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.02,
-        "both": 0.1
+        "template_only": 0.0,
+        "both": 0.29
       }
     },
     "mistral-7b": {
       "star": {
         "clean": 0.0,
-        "key_only": 0.02,
-        "template_only": 0.0,
-        "both": 0.4
+        "key_only": 0.03,
+        "template_only": 0.01,
+        "both": 0.49
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.04,
-        "both": 0.14
+        "template_only": 0.01,
+        "both": 0.3
       },
       "dag": {
         "clean": 0.0,
         "key_only": 0.0,
         "template_only": 0.02,
-        "both": 0.32
+        "both": 0.28
       }
     },
     "llama3-8b": {
       "star": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.0,
-        "both": 0.3
+        "template_only": 0.03,
+        "both": 0.41
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.0,
-        "both": 0.16
+        "template_only": 0.01,
+        "both": 0.32
       },
       "dag": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.0,
-        "both": 0.3
+        "template_only": 0.01,
+        "both": 0.25
       }
     }
   },
@@ -66,61 +66,61 @@
       "star": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.0
+          "key_only": 0.03,
+          "template_only": 0.02,
+          "both": 0.52
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.0,
+          "key_only": 0.01,
           "template_only": 0.02,
-          "both": 0.2
+          "both": 0.47
         },
         "full": {
           "clean": 0.0,
           "key_only": 0.02,
-          "template_only": 0.04,
-          "both": 0.34
+          "template_only": 0.01,
+          "both": 0.55
         }
       },
       "chain": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.04
+          "key_only": 0.03,
+          "template_only": 0.01,
+          "both": 0.5
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.02,
-          "both": 0.24
+          "key_only": 0.01,
+          "template_only": 0.0,
+          "both": 0.41
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
+          "key_only": 0.01,
           "template_only": 0.0,
-          "both": 0.4
+          "both": 0.41
         }
       },
       "dag": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.02
+          "key_only": 0.02,
+          "template_only": 0.0,
+          "both": 0.46
         },
         "routing+key": {
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.0,
-          "both": 0.36
+          "both": 0.42
         },
         "full": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.34
+          "template_only": 0.01,
+          "both": 0.49
         }
       }
     },
@@ -130,59 +130,59 @@
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.0
+          "both": 0.65
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.34
+          "key_only": 0.02,
+          "template_only": 0.0,
+          "both": 0.63
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.04,
-          "both": 0.62
+          "key_only": 0.03,
+          "template_only": 0.01,
+          "both": 0.7
         }
       },
       "chain": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.0
+          "key_only": 0.02,
+          "template_only": 0.01,
+          "both": 0.56
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.0,
-          "both": 0.38
+          "key_only": 0.02,
+          "template_only": 0.03,
+          "both": 0.47
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.04,
-          "both": 0.26
+          "key_only": 0.0,
+          "template_only": 0.02,
+          "both": 0.5
         }
       },
       "dag": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
+          "key_only": 0.02,
           "template_only": 0.0,
-          "both": 0.36
+          "both": 0.65
         },
         "routing+key": {
           "clean": 0.0,
           "key_only": 0.02,
-          "template_only": 0.04,
-          "both": 0.52
+          "template_only": 0.01,
+          "both": 0.61
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.4
+          "key_only": 0.04,
+          "template_only": 0.0,
+          "both": 0.61
         }
       }
     },
@@ -190,61 +190,61 @@
       "star": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.04,
-          "both": 0.0
+          "key_only": 0.02,
+          "template_only": 0.0,
+          "both": 0.58
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.38
+          "key_only": 0.02,
+          "template_only": 0.01,
+          "both": 0.63
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.26
+          "key_only": 0.02,
+          "template_only": 0.02,
+          "both": 0.62
         }
       },
       "chain": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
+          "key_only": 0.02,
           "template_only": 0.0,
-          "both": 0.3
+          "both": 0.55
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.02,
+          "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.26
+          "both": 0.46
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
+          "key_only": 0.01,
           "template_only": 0.0,
-          "both": 0.34
+          "both": 0.47
         }
       },
       "dag": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
+          "key_only": 0.02,
           "template_only": 0.0,
-          "both": 0.04
+          "both": 0.47
         },
         "routing+key": {
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.38
+          "both": 0.64
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.28
+          "key_only": 0.01,
+          "template_only": 0.0,
+          "both": 0.54
         }
       }
     }
@@ -252,38 +252,38 @@
   "table3": {
     "gemma-2b": {
       "before": {
-        "min": 0.1,
-        "mean": 0.19333333333333336,
-        "max": 0.34
+        "min": 0.27,
+        "mean": 0.2833333333333334,
+        "max": 0.29
       },
       "after": {
-        "min": 0.34,
-        "mean": 0.36000000000000004,
-        "max": 0.4
+        "min": 0.41,
+        "mean": 0.48333333333333334,
+        "max": 0.55
       }
     },
     "mistral-7b": {
       "before": {
-        "min": 0.14,
-        "mean": 0.2866666666666667,
-        "max": 0.4
+        "min": 0.28,
+        "mean": 0.3566666666666667,
+        "max": 0.49
       },
       "after": {
-        "min": 0.26,
-        "mean": 0.4266666666666667,
-        "max": 0.62
+        "min": 0.5,
+        "mean": 0.6033333333333334,
+        "max": 0.7
       }
     },
     "llama3-8b": {
       "before": {
-        "min": 0.16,
-        "mean": 0.25333333333333335,
-        "max": 0.3
+        "min": 0.25,
+        "mean": 0.32666666666666666,
+        "max": 0.41
       },
       "after": {
-        "min": 0.26,
-        "mean": 0.2933333333333334,
-        "max": 0.34
+        "min": 0.47,
+        "mean": 0.5433333333333333,
+        "max": 0.62
       }
     }
   },
@@ -306,38 +306,38 @@
   "table4": {
     "star": {
       "surrogate": {
-        "min": 0.38,
-        "mean": 0.55,
-        "max": 0.64
+        "min": 0.42,
+        "mean": 0.61,
+        "max": 0.7
       },
       "empirical": {
-        "min": 0.31,
-        "mean": 0.44,
-        "max": 0.51
+        "min": 0.47,
+        "mean": 0.57,
+        "max": 0.64
       }
     },
     "chain": {
       "surrogate": {
-        "min": 0.27,
-        "mean": 0.45,
-        "max": 0.63
+        "min": 0.34,
+        "mean": 0.53,
+        "max": 0.7
       },
       "empirical": {
-        "min": 0.2,
-        "mean": 0.28,
-        "max": 0.33
+        "min": 0.29,
+        "mean": 0.41,
+        "max": 0.48
       }
     },
     "dag": {
       "surrogate": {
-        "min": 0.33,
-        "mean": 0.5,
-        "max": 0.64
+        "min": 0.38,
+        "mean": 0.57,
+        "max": 0.7
       },
       "empirical": {
-        "min": 0.2,
-        "mean": 0.38,
-        "max": 0.47
+        "min": 0.35,
+        "mean": 0.47,
+        "max": 0.54
       }
     }
   },
@@ -345,17 +345,17 @@
     "baseline": {
       "rho": 0.0,
       "clean": 0.0,
-      "key_only": 0.01,
+      "key_only": 0.0,
       "template_only": 0.01,
-      "both": 0.28,
-      "fa": 0.02
+      "both": 0.32,
+      "fa": 0.01
     },
     "biased": {
       "rho": 0.8,
       "clean": 0.0,
-      "key_only": 0.01,
-      "template_only": 0.02,
-      "both": 0.45,
+      "key_only": 0.02,
+      "template_only": 0.01,
+      "both": 0.55,
       "fa": 0.03
     }
   },
@@ -363,59 +363,59 @@
     "Llama-4-Scout-17B": {
       "0.0": {
         "clean": 0.0,
-        "key_only": 0.01,
-        "template_only": 0.03,
-        "both": 0.17
+        "key_only": 0.0,
+        "template_only": 0.02,
+        "both": 0.29
       },
       "0.4": {
         "clean": 0.0,
-        "key_only": 0.03,
-        "template_only": 0.01,
-        "both": 0.47
+        "key_only": 0.01,
+        "template_only": 0.02,
+        "both": 0.49
       },
       "0.8": {
         "clean": 0.0,
         "key_only": 0.01,
-        "template_only": 0.01,
-        "both": 0.35
+        "template_only": 0.02,
+        "both": 0.51
       }
     },
     "GPT-5-mini": {
       "0.0": {
         "clean": 0.0,
-        "key_only": 0.01,
-        "template_only": 0.01,
-        "both": 0.23
+        "key_only": 0.02,
+        "template_only": 0.02,
+        "both": 0.36
       },
       "0.4": {
         "clean": 0.0,
-        "key_only": 0.04,
-        "template_only": 0.02,
-        "both": 0.47
+        "key_only": 0.02,
+        "template_only": 0.01,
+        "both": 0.56
       },
       "0.8": {
         "clean": 0.0,
-        "key_only": 0.03,
-        "template_only": 0.01,
-        "both": 0.46
+        "key_only": 0.01,
+        "template_only": 0.02,
+        "both": 0.5
       }
     }
   },
   "table7": {
     "None": {
-      "asr_both": 0.41,
+      "asr_both": 0.51,
       "fa": 0.03,
       "relative_drop": "--"
     },
     "Tool Allowlist (D1)": {
-      "asr_both": 0.33,
-      "fa": 0.01,
-      "relative_drop": "-20%"
+      "asr_both": 0.42,
+      "fa": 0.06,
+      "relative_drop": "-18%"
     },
     "Least Privilege (D2)": {
-      "asr_both": 0.36,
-      "fa": 0.03,
-      "relative_drop": "-12%"
+      "asr_both": 0.44,
+      "fa": 0.04,
+      "relative_drop": "-14%"
     }
   },
   "paper_reference": {
