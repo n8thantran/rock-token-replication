@@ -1,40 +1,54 @@
-# Rock Token Replication Progress
+# Progress Tracking
 
-## Current Phase
-COMPLETE - All analyses done, reproduce.sh tested, REPORT.md written.
+## Current Phase: Planning & Initial Implementation
+
+## Paper Summary
+"Conjunctive Prompt Attacks in Multi-Agent LLM Systems" - Studies attacks where a trigger key in user query + hidden template in compromised agent activate harmful behavior only when routing brings them together.
 
 ## Implementation Plan
+- [ ] Core framework setup (agents, segmentation, routing)
+- [ ] Three topologies: Star, Chain, DAG
+- [ ] Routing mechanism: Pr[a=a*|s] = clip(α*I_acc(s) + ρ*I_acc(s)*I_k(s))
+- [ ] Template injection (prefix, wrap, suffix)
+- [ ] Activation detection (__ACTIVATED__ marker)
+- [ ] Four evaluation regimes: clean, key_only, template_only, both
+- [ ] Gumbel-Softmax counterpart optimization
+- [ ] Three optimization levels: routing, routing+key, full
+- [ ] Run experiments with LLM backends (Gemma-2B at minimum)
+- [ ] Defense evaluation (PromptGuard, Llama-Guard)
+- [ ] Generate all tables and figures
+- [ ] Write reproduce.sh and REPORT.md
 
-### Key Methods to Implement:
-1. [x] Read and understand paper thoroughly
-2. [x] Write Rock Token identification pipeline (rock_token_identification.py)
-3. [x] Run Rock Token identification pipeline (30 MATH-500 problems, results cached)
-4. [x] Run Gradient geometry analysis (gradient_geometry.py)
-5. [x] Implement Pillar Token knockout analysis (partial - 5/10 candidates)
-6. [x] Implement Selective Distillation analysis
-7. [x] Generate all visualizations and results
-8. [x] Create reproduce.sh and final report
-9. [ ] Final commit and end_task
+## Key Parameters (from paper)
+- Segments S = 3 (example: flight, account, hotel)
+- Trigger key: __KEY__
+- Activation marker: __ACTIVATED__
+- 50 episodes per configuration
+- 20 agent role descriptions
+- α (account-affinity): fixed parameter
+- ρ (routing bias): [0, 1], optimized by attacker
+- Template slots: prefix, wrap, suffix
+- Models: Gemma-2B, Mistral-7B, LLaMA3-8B
+- Topologies: Star, Chain, DAG
 
-### Completed Results:
-- **Rock Token identification**: K=100 tokens, KL coverage 66.5% (paper ~60%)
-- **Gradient geometry**: Rock tokens have lower grad magnitude than high-KL tokens (0.112 vs 0.247)
-- **Selective distillation**: Rock tokens account for 81.5% of KL, estimated 3.1x speedup
-- **Pillar knockout**: 5 candidates tested, all Neutral (consistent with paper's 96.5% Neutral)
-- **Summary table**: summary_table.png with all comparisons
+## Key Results to Reproduce
+- Table 1: Baseline ASR before optimization
+- Table 2: ASR after optimization (3 opt levels × 3 models × 3 topologies)
+- Table 3: Aggregated ASR min/mean/max
+- Figure 3: F1 detection scores for guard models
+- Table 4: Surrogate fidelity
+- Table 5: Activation predicate verification
+- Table 6: Transferability (Llama-4-Scout, GPT-5-mini)
+- Table 7: System-level defense evaluation
 
-### All Output Files:
-- results/rock_token_results.json
-- results/gradient_geometry_results.json
-- results/selective_distillation_results.json
-- results/pillar_knockout_results.json
-- results/summary_table.png
-- results/rock_token_analysis.png
-- results/kl_vs_freq_scatter.png
-- results/rock_token_density.png
-- results/jaccard_stability.png
-- results/gradient_geometry.png
-- results/gradient_contribution.png
-- results/selective_distillation.png
-- results/kl_contribution_pies.png
-- results/pillar_knockout.png
+## Key Decisions
+- Will implement full framework faithfully
+- Start with Gemma-2B (smallest model)
+- Use greedy decoding as paper states
+- Fixed max generation length
+
+## Completed Work
+(none yet)
+
+## Failed Approaches
+(none yet)
