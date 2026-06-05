@@ -1,136 +1,0 @@
-/usr/local/lib/python3.14/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
-  import pynvml  # type: ignore[import]
-================================================================================
-ROCK TOKEN IDENTIFICATION PIPELINE
-================================================================================
-
-============================================================
-STEP 1: Generating student rollouts + computing log-probs
-============================================================
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
-Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   6%|▌         | 23/398 [00:00<00:01, 229.83it/s]Loading weights:  18%|█▊        | 71/398 [00:00<00:00, 374.21it/s]Loading weights:  31%|███▏      | 125/398 [00:00<00:00, 445.01it/s]Loading weights:  45%|████▍     | 179/398 [00:00<00:00, 478.36it/s]Loading weights:  58%|█████▊    | 231/398 [00:00<00:00, 489.45it/s]Loading weights:  70%|███████   | 280/398 [00:00<00:00, 485.44it/s]Loading weights:  84%|████████▍ | 334/398 [00:00<00:00, 497.17it/s]Loading weights:  97%|█████████▋| 388/398 [00:00<00:00, 497.63it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 477.55it/s]
-Loading MATH-500 dataset...
-Generating test split:   0%|          | 0/500 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 500/500 [00:00<00:00, 133721.35 examples/s]
-Loaded 30 problems
-Generating rollouts:   0%|          | 0/30 [00:00<?, ?it/s]Generating rollouts:   3%|▎         | 1/30 [00:12<06:05, 12.61s/it]Generating rollouts:   7%|▋         | 2/30 [00:32<07:50, 16.82s/it]Generating rollouts:  10%|█         | 3/30 [00:40<05:42, 12.67s/it]Generating rollouts:  13%|█▎        | 4/30 [00:48<04:46, 11.00s/it]Generating rollouts:  17%|█▋        | 5/30 [01:05<05:28, 13.12s/it]Generating rollouts:  20%|██        | 6/30 [01:13<04:33, 11.40s/it]Generating rollouts:  23%|██▎       | 7/30 [01:21<03:57, 10.32s/it]Generating rollouts:  27%|██▋       | 8/30 [01:33<03:56, 10.75s/it]Generating rollouts:  30%|███       | 9/30 [01:41<03:26,  9.82s/it]  Generated 10/30 rollouts, avg gen len: 406
-Generating rollouts:  33%|███▎      | 10/30 [01:52<03:24, 10.21s/it]Generating rollouts:  37%|███▋      | 11/30 [02:03<03:20, 10.53s/it]Generating rollouts:  40%|████      | 12/30 [02:14<03:14, 10.83s/it]Generating rollouts:  43%|████▎     | 13/30 [02:26<03:06, 11.00s/it]Generating rollouts:  47%|████▋     | 14/30 [02:31<02:27,  9.25s/it]Generating rollouts:  50%|█████     | 15/30 [02:43<02:29,  9.98s/it]Generating rollouts:  53%|█████▎    | 16/30 [02:54<02:27, 10.54s/it]Generating rollouts:  57%|█████▋    | 17/30 [03:01<02:01,  9.36s/it]Generating rollouts:  60%|██████    | 18/30 [03:12<01:56,  9.72s/it]Generating rollouts:  63%|██████▎   | 19/30 [03:23<01:53, 10.28s/it]  Generated 20/30 rollouts, avg gen len: 430
-Generating rollouts:  67%|██████▋   | 20/30 [03:34<01:45, 10.52s/it]Generating rollouts:  70%|███████   | 21/30 [03:38<01:15,  8.44s/it]Generating rollouts:  73%|███████▎  | 22/30 [03:49<01:14,  9.28s/it]Generating rollouts:  77%|███████▋  | 23/30 [04:01<01:11, 10.15s/it]Generating rollouts:  80%|████████  | 24/30 [04:13<01:04, 10.74s/it]Generating rollouts:  83%|████████▎ | 25/30 [04:26<00:56, 11.38s/it]Generating rollouts:  87%|████████▋ | 26/30 [04:39<00:46, 11.67s/it]Generating rollouts:  90%|█████████ | 27/30 [04:51<00:35, 11.77s/it]Generating rollouts:  93%|█████████▎| 28/30 [04:58<00:20, 10.40s/it]Generating rollouts:  97%|█████████▋| 29/30 [05:03<00:08,  8.96s/it]  Generated 30/30 rollouts, avg gen len: 426
-Generating rollouts: 100%|██████████| 30/30 [05:13<00:00,  9.14s/it]Generating rollouts: 100%|██████████| 30/30 [05:13<00:00, 10.45s/it]
-Saved 30 rollouts to cache
-Total rollouts: 30
-Average generation length: 426
-
-============================================================
-STEP 2: Computing KL divergences with teacher model
-============================================================
-Loading teacher model (4-bit quantized)...
-Loading weights:   0%|          | 0/531 [00:00<?, ?it/s]Loading weights:   0%|          | 2/531 [00:00<00:34, 15.46it/s]Loading weights:   1%|          | 5/531 [00:00<00:28, 18.21it/s]Loading weights:   3%|▎         | 16/531 [00:00<00:12, 42.77it/s]Loading weights:   5%|▌         | 27/531 [00:00<00:09, 54.07it/s]Loading weights:   7%|▋         | 38/531 [00:00<00:08, 60.08it/s]Loading weights:   9%|▉         | 49/531 [00:00<00:07, 63.75it/s]Loading weights:  11%|█▏        | 60/531 [00:01<00:07, 66.09it/s]Loading weights:  13%|█▎        | 71/531 [00:01<00:06, 67.58it/s]Loading weights:  15%|█▌        | 82/531 [00:01<00:06, 68.58it/s]Loading weights:  18%|█▊        | 93/531 [00:01<00:06, 69.38it/s]Loading weights:  20%|█▉        | 104/531 [00:01<00:06, 69.80it/s]Loading weights:  22%|██▏       | 115/531 [00:01<00:05, 70.09it/s]Loading weights:  24%|██▎       | 126/531 [00:01<00:05, 70.32it/s]Loading weights:  26%|██▌       | 137/531 [00:02<00:05, 69.55it/s]Loading weights:  28%|██▊       | 148/531 [00:02<00:05, 69.67it/s]Loading weights:  30%|██▉       | 159/531 [00:02<00:05, 70.14it/s]Loading weights:  32%|███▏      | 170/531 [00:02<00:05, 70.42it/s]Loading weights:  34%|███▍      | 181/531 [00:02<00:04, 70.57it/s]Loading weights:  36%|███▌      | 192/531 [00:02<00:04, 70.52it/s]Loading weights:  38%|███▊      | 203/531 [00:03<00:04, 70.35it/s]Loading weights:  40%|████      | 214/531 [00:03<00:04, 70.29it/s]Loading weights:  42%|████▏     | 225/531 [00:03<00:04, 70.40it/s]Loading weights:  44%|████▍     | 236/531 [00:03<00:04, 70.40it/s]Loading weights:  47%|████▋     | 247/531 [00:03<00:04, 70.34it/s]Loading weights:  49%|████▊     | 258/531 [00:03<00:03, 69.71it/s]Loading weights:  51%|█████     | 269/531 [00:04<00:03, 69.87it/s]Loading weights:  53%|█████▎    | 280/531 [00:04<00:03, 67.60it/s]Loading weights:  55%|█████▍    | 291/531 [00:04<00:03, 68.55it/s]Loading weights:  57%|█████▋    | 302/531 [00:04<00:03, 69.04it/s]Loading weights:  59%|█████▉    | 313/531 [00:04<00:03, 69.47it/s]Loading weights:  61%|██████    | 324/531 [00:04<00:02, 69.85it/s]Loading weights:  63%|██████▎   | 335/531 [00:04<00:02, 70.21it/s]Loading weights:  65%|██████▌   | 346/531 [00:05<00:02, 70.57it/s]Loading weights:  67%|██████▋   | 357/531 [00:05<00:02, 70.74it/s]Loading weights:  69%|██████▉   | 368/531 [00:05<00:02, 70.91it/s]Loading weights:  71%|███████▏  | 379/531 [00:05<00:02, 71.00it/s]Loading weights:  73%|███████▎  | 390/531 [00:05<00:01, 70.92it/s]Loading weights:  76%|███████▌  | 401/531 [00:05<00:01, 70.95it/s]Loading weights:  78%|███████▊  | 412/531 [00:06<00:01, 70.79it/s]Loading weights:  80%|███████▉  | 423/531 [00:06<00:01, 70.32it/s]Loading weights:  82%|████████▏ | 434/531 [00:06<00:01, 70.48it/s]Loading weights:  84%|████████▍ | 445/531 [00:06<00:01, 70.58it/s]Loading weights:  86%|████████▌ | 456/531 [00:06<00:01, 70.65it/s]Loading weights:  88%|████████▊ | 467/531 [00:06<00:00, 70.50it/s]Loading weights:  90%|█████████ | 478/531 [00:07<00:00, 68.97it/s]Loading weights:  92%|█████████▏| 489/531 [00:07<00:00, 68.13it/s]Loading weights:  94%|█████████▍| 500/531 [00:07<00:00, 66.96it/s]Loading weights:  96%|█████████▌| 511/531 [00:07<00:00, 67.81it/s]Loading weights:  98%|█████████▊| 522/531 [00:07<00:00, 68.43it/s]Loading weights: 100%|██████████| 531/531 [00:07<00:00, 69.15it/s]
-Teacher KL computation:   0%|          | 0/30 [00:00<?, ?it/s]Teacher KL computation:   3%|▎         | 1/30 [00:00<00:04,  6.58it/s]Teacher KL computation:   7%|▋         | 2/30 [00:00<00:04,  6.55it/s]Teacher KL computation:  10%|█         | 3/30 [00:00<00:03,  6.88it/s]Teacher KL computation:  13%|█▎        | 4/30 [00:00<00:03,  7.05it/s]Teacher KL computation:  17%|█▋        | 5/30 [00:00<00:03,  6.77it/s]Teacher KL computation:  20%|██        | 6/30 [00:00<00:03,  6.97it/s]Teacher KL computation:  23%|██▎       | 7/30 [00:01<00:03,  7.11it/s]Teacher KL computation:  27%|██▋       | 8/30 [00:01<00:03,  6.87it/s]Teacher KL computation:  30%|███       | 9/30 [00:01<00:03,  6.99it/s]Teacher KL computation:  33%|███▎      | 10/30 [00:01<00:02,  6.71it/s]Teacher KL computation:  37%|███▋      | 11/30 [00:01<00:02,  6.63it/s]Teacher KL computation:  40%|████      | 12/30 [00:01<00:02,  6.60it/s]Teacher KL computation:  43%|████▎     | 13/30 [00:01<00:02,  6.58it/s]Teacher KL computation:  47%|████▋     | 14/30 [00:02<00:02,  6.89it/s]Teacher KL computation:  50%|█████     | 15/30 [00:02<00:02,  6.72it/s]Teacher KL computation:  53%|█████▎    | 16/30 [00:02<00:02,  6.51it/s]Teacher KL computation:  57%|█████▋    | 17/30 [00:02<00:01,  6.86it/s]Teacher KL computation:  60%|██████    | 18/30 [00:02<00:01,  6.85it/s]Teacher KL computation:  63%|██████▎   | 19/30 [00:02<00:01,  6.70it/s]Teacher KL computation:  67%|██████▋   | 20/30 [00:02<00:01,  6.69it/s]Teacher KL computation:  70%|███████   | 21/30 [00:03<00:01,  7.07it/s]Teacher KL computation:  73%|███████▎  | 22/30 [00:03<00:01,  6.94it/s]Teacher KL computation:  77%|███████▋  | 23/30 [00:03<00:01,  6.80it/s]Teacher KL computation:  80%|████████  | 24/30 [00:03<00:00,  6.78it/s]Teacher KL computation:  83%|████████▎ | 25/30 [00:03<00:00,  6.63it/s]Teacher KL computation:  87%|████████▋ | 26/30 [00:03<00:00,  6.39it/s]Teacher KL computation:  90%|█████████ | 27/30 [00:04<00:00,  6.51it/s]Teacher KL computation:  93%|█████████▎| 28/30 [00:04<00:00,  6.83it/s]Teacher KL computation:  97%|█████████▋| 29/30 [00:04<00:00,  7.14it/s]Teacher KL computation: 100%|██████████| 30/30 [00:04<00:00,  7.22it/s]Teacher KL computation: 100%|██████████| 30/30 [00:04<00:00,  6.82it/s]
-Computed KL for 1053 unique token types
-
-============================================================
-STEP 3: Computing Rock Scores
-============================================================
-
-KL Coverage by cutoff K:
-  K=10: 0.208 (20.8%)
-  K=25: 0.371 (37.1%)
-  K=50: 0.518 (51.8%)
-  K=75: 0.602 (60.2%)
-  K=100: 0.665 (66.5%)
-  K=150: 0.754 (75.4%)
-  K=200: 0.815 (81.5%)
-  K=300: 0.895 (89.5%)
-  K=500: 0.974 (97.4%)
-
-Top-30 Rock Tokens:
-Rank                     Token   Rock Score    Mean KL     Freq
------------------------------------------------------------------
-   1                    ' the'      27.6715     0.1014      273
-   2                      ' $'      25.0676     0.0601      417
-   3                     ' **'      22.2048     0.1213      183
-   4                       ' '      17.0705     0.0246      695
-   5                      'We'      15.3205     0.2321       66
-   6                   ':\n\n'      15.2505     0.0947      161
-   7                       ','      13.6031     0.0648      210
-   8             ' Understand'      12.2432     0.9418       13
-   9                      ' ('      11.9523     0.1440       83
-  10                     ' is'      11.9110     0.0993      120
-  11                     ' to'      11.4098     0.1130      101
-  12                 '---\n\n'      11.3564     0.1352       84
-  13                    '\n\n'      10.0304     0.0452      222
-  14                       '6'       9.9360     0.0849      117
-  15                      ' a'       9.7615     0.1097       89
-  16                    ' and'       9.4912     0.1318       72
-  17                      '**'       9.2618     0.0702      132
-  18                   ' that'       8.8047     0.1726       51
-  19                    ' are'       8.2610     0.0802      103
-  20                     ' \\'       8.1514     0.0274      297
-  21                      '$$'       8.0062     0.0222      360
-  22                       'x'       7.8432     0.0968       81
-  23                     ' we'       7.8178     0.1907       41
-  24                     ' of'       7.7200     0.0555      139
-  25                   '.\n\n'       7.1521     0.0851       84
-  26                      'So'       6.8496     0.1427       48
-  27                     'Now'       6.1709     0.6171       10
-  28                   'three'       6.0969     2.0323        3
-  29                       '3'       6.0166     0.0318      189
-  30                     ' in'       5.8867     0.1840       32
-
-============================================================
-STEP 4: Categorizing Rock Tokens and computing density
-============================================================
-
-Rock Token Categories:
-  latex_math: 12 tokens
-                         ' $' (score=25.0676, freq=417, mean_kl=0.0601)
-                        ' \\' (score=8.1514, freq=297, mean_kl=0.0274)
-                         '$$' (score=8.0062, freq=360, mean_kl=0.0222)
-                          '{' (score=5.4824, freq=190, mean_kl=0.0289)
-                 '<|im_end|>' (score=4.7821, freq=14, mean_kl=0.3416)
-  markdown_structure: 12 tokens
-                        ' **' (score=22.2048, freq=183, mean_kl=0.1213)
-                          ' ' (score=17.0705, freq=695, mean_kl=0.0246)
-                      ':\n\n' (score=15.2505, freq=161, mean_kl=0.0947)
-                       '\n\n' (score=10.0304, freq=222, mean_kl=0.0452)
-                         '**' (score=9.2618, freq=132, mean_kl=0.0702)
-  discourse_markers: 21 tokens
-                       ' the' (score=27.6715, freq=273, mean_kl=0.1014)
-                         'We' (score=15.3205, freq=66, mean_kl=0.2321)
-                        ' is' (score=11.9110, freq=120, mean_kl=0.0993)
-                       ' and' (score=9.4912, freq=72, mean_kl=0.1318)
-                      ' that' (score=8.8047, freq=51, mean_kl=0.1726)
-  digits: 14 tokens
-                          ',' (score=13.6031, freq=210, mean_kl=0.0648)
-                    '---\n\n' (score=11.3564, freq=84, mean_kl=0.1352)
-                          '6' (score=9.9360, freq=117, mean_kl=0.0849)
-                      '.\n\n' (score=7.1521, freq=84, mean_kl=0.0851)
-                          '3' (score=6.0166, freq=189, mean_kl=0.0318)
-  other: 41 tokens
-                ' Understand' (score=12.2432, freq=13, mean_kl=0.9418)
-                         ' (' (score=11.9523, freq=83, mean_kl=0.1440)
-                        ' to' (score=11.4098, freq=101, mean_kl=0.1130)
-                         ' a' (score=9.7615, freq=89, mean_kl=0.1097)
-                          'x' (score=7.8432, freq=81, mean_kl=0.0968)
-
-Rock Token Density (K=100):
-  Median: 0.655 (65.5%)
-  Mean: 0.667 (66.7%)
-  Std: 0.066
-
-Rock Token KL Contribution: 0.665 (66.5%)
-
-============================================================
-Creating visualizations
-============================================================
-  Saved rock_token_analysis.png
-  Saved rock_token_density.png
-  Saved kl_vs_freq_scatter.png
-  Saved jaccard_stability.png
-All visualizations saved to results/
-
-============================================================
-COMPLETE! Total time: 5.6 minutes
-Results saved to /workspace/results/
-============================================================
