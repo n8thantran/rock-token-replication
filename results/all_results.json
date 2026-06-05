@@ -4,60 +4,60 @@
       "star": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.02,
-        "both": 0.16
+        "template_only": 0.0,
+        "both": 0.18
       },
       "chain": {
         "clean": 0.0,
-        "key_only": 0.02,
+        "key_only": 0.0,
         "template_only": 0.0,
-        "both": 0.18
+        "both": 0.1
       },
       "dag": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.02,
-        "both": 0.14
+        "template_only": 0.0,
+        "both": 0.24
       }
     },
     "mistral-7b": {
       "star": {
         "clean": 0.0,
-        "key_only": 0.04,
-        "template_only": 0.08,
+        "key_only": 0.02,
+        "template_only": 0.04,
         "both": 0.42
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.04,
-        "both": 0.28
+        "template_only": 0.02,
+        "both": 0.26
       },
       "dag": {
         "clean": 0.0,
-        "key_only": 0.0,
-        "template_only": 0.04,
-        "both": 0.18
+        "key_only": 0.06,
+        "template_only": 0.0,
+        "both": 0.28
       }
     },
     "llama3-8b": {
       "star": {
         "clean": 0.0,
-        "key_only": 0.0,
-        "template_only": 0.02,
-        "both": 0.26
+        "key_only": 0.02,
+        "template_only": 0.0,
+        "both": 0.38
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.02,
-        "both": 0.16
+        "template_only": 0.0,
+        "both": 0.26
       },
       "dag": {
         "clean": 0.0,
-        "key_only": 0.02,
-        "template_only": 0.04,
-        "both": 0.26
+        "key_only": 0.0,
+        "template_only": 0.0,
+        "both": 0.12
       }
     }
   },
@@ -66,61 +66,61 @@
       "star": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.08,
-          "template_only": 0.02,
-          "both": 0.42
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.02
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.06,
-          "template_only": 0.04,
-          "both": 0.38
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.36
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.02,
-          "both": 0.4
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.28
         }
       },
       "chain": {
         "routing": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.0
+          "template_only": 0.0,
+          "both": 0.02
         },
         "routing+key": {
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.0,
-          "both": 0.3
+          "both": 0.26
         },
         "full": {
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.22
+          "both": 0.44
         }
       },
       "dag": {
         "routing": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.04,
-          "both": 0.02
+          "template_only": 0.0,
+          "both": 0.0
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.04,
-          "both": 0.38
+          "key_only": 0.02,
+          "template_only": 0.0,
+          "both": 0.26
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.04,
-          "both": 0.22
+          "key_only": 0.02,
+          "template_only": 0.02,
+          "both": 0.24
         }
       }
     },
@@ -129,60 +129,60 @@
         "routing": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.04,
-          "both": 0.04
+          "template_only": 0.02,
+          "both": 0.0
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.06,
-          "template_only": 0.04,
-          "both": 0.6
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.56
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.02,
-          "both": 0.32
+          "key_only": 0.02,
+          "template_only": 0.04,
+          "both": 0.7
         }
       },
       "chain": {
         "routing": {
           "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.32
+          "key_only": 0.02,
+          "template_only": 0.04,
+          "both": 0.24
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.04,
+          "key_only": 0.0,
+          "template_only": 0.0,
           "both": 0.36
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.04,
+          "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.26
+          "both": 0.42
         }
       },
       "dag": {
         "routing": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.0,
+          "template_only": 0.02,
           "both": 0.02
         },
         "routing+key": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.06,
-          "both": 0.26
+          "template_only": 0.02,
+          "both": 0.4
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.06,
-          "template_only": 0.04,
-          "both": 0.4
+          "key_only": 0.0,
+          "template_only": 0.02,
+          "both": 0.42
         }
       }
     },
@@ -191,60 +191,60 @@
         "routing": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.02,
-          "both": 0.0
+          "template_only": 0.04,
+          "both": 0.02
         },
         "routing+key": {
           "clean": 0.0,
           "key_only": 0.0,
-          "template_only": 0.06,
+          "template_only": 0.02,
+          "both": 0.56
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.02,
+          "both": 0.32
+        }
+      },
+      "chain": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.3
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.32
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.02,
+          "both": 0.28
+        }
+      },
+      "dag": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.0,
+          "both": 0.0
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.0,
           "both": 0.34
         },
         "full": {
           "clean": 0.0,
           "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.38
-        }
-      },
-      "chain": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.06,
-          "template_only": 0.04,
-          "both": 0.14
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.04,
-          "both": 0.26
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.04,
-          "both": 0.26
-        }
-      },
-      "dag": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.08,
-          "template_only": 0.0,
-          "both": 0.38
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.04,
-          "both": 0.56
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.1,
-          "template_only": 0.0,
-          "both": 0.38
+          "both": 0.42
         }
       }
     }
@@ -252,38 +252,38 @@
   "table3": {
     "gemma-2b": {
       "before": {
-        "min": 0.14,
-        "mean": 0.16,
-        "max": 0.18
+        "min": 0.1,
+        "mean": 0.17333333333333334,
+        "max": 0.24
       },
       "after": {
-        "min": 0.22,
-        "mean": 0.27999999999999997,
-        "max": 0.4
+        "min": 0.24,
+        "mean": 0.32,
+        "max": 0.44
       }
     },
     "mistral-7b": {
       "before": {
-        "min": 0.18,
-        "mean": 0.2933333333333333,
+        "min": 0.26,
+        "mean": 0.32,
         "max": 0.42
       },
       "after": {
-        "min": 0.26,
-        "mean": 0.3266666666666667,
-        "max": 0.4
+        "min": 0.42,
+        "mean": 0.5133333333333333,
+        "max": 0.7
       }
     },
     "llama3-8b": {
       "before": {
-        "min": 0.16,
-        "mean": 0.22666666666666668,
-        "max": 0.26
+        "min": 0.12,
+        "mean": 0.25333333333333335,
+        "max": 0.38
       },
       "after": {
-        "min": 0.26,
+        "min": 0.28,
         "mean": 0.34,
-        "max": 0.38
+        "max": 0.42
       }
     }
   },
@@ -311,9 +311,9 @@
         "max": 0.64
       },
       "empirical": {
-        "min": 0.26,
-        "mean": 0.37,
-        "max": 0.47
+        "min": 0.36,
+        "mean": 0.42,
+        "max": 0.45
       }
     },
     "chain": {
@@ -323,9 +323,9 @@
         "max": 0.63
       },
       "empirical": {
-        "min": 0.15,
-        "mean": 0.23,
-        "max": 0.29
+        "min": 0.27,
+        "mean": 0.34,
+        "max": 0.4
       }
     },
     "dag": {
@@ -335,9 +335,9 @@
         "max": 0.64
       },
       "empirical": {
-        "min": 0.2,
-        "mean": 0.3,
-        "max": 0.38
+        "min": 0.28,
+        "mean": 0.37,
+        "max": 0.45
       }
     }
   },
@@ -345,77 +345,113 @@
     "baseline": {
       "rho": 0.0,
       "clean": 0.0,
-      "key_only": 0.02,
-      "template_only": 0.03,
-      "both": 0.22,
-      "fa": 0.05
+      "key_only": 0.0,
+      "template_only": 0.01,
+      "both": 0.24,
+      "fa": 0.01
     },
     "biased": {
       "rho": 0.8,
       "clean": 0.0,
-      "key_only": 0.03,
-      "template_only": 0.03,
-      "both": 0.45,
-      "fa": 0.06
+      "key_only": 0.01,
+      "template_only": 0.02,
+      "both": 0.42,
+      "fa": 0.03
     }
   },
   "table6": {
     "Llama-4-Scout-17B": {
       "0.0": {
         "clean": 0.0,
-        "key_only": 0.02,
+        "key_only": 0.03,
         "template_only": 0.03,
-        "both": 0.24
+        "both": 0.23
       },
       "0.4": {
         "clean": 0.0,
-        "key_only": 0.06,
+        "key_only": 0.03,
         "template_only": 0.03,
-        "both": 0.37
+        "both": 0.31
       },
       "0.8": {
         "clean": 0.0,
         "key_only": 0.02,
-        "template_only": 0.01,
-        "both": 0.29
+        "template_only": 0.03,
+        "both": 0.35
       }
     },
     "GPT-5-mini": {
       "0.0": {
         "clean": 0.0,
-        "key_only": 0.02,
-        "template_only": 0.02,
-        "both": 0.23
+        "key_only": 0.0,
+        "template_only": 0.03,
+        "both": 0.21
       },
       "0.4": {
         "clean": 0.0,
-        "key_only": 0.05,
-        "template_only": 0.02,
-        "both": 0.39
+        "key_only": 0.02,
+        "template_only": 0.03,
+        "both": 0.45
       },
       "0.8": {
         "clean": 0.0,
-        "key_only": 0.03,
-        "template_only": 0.01,
-        "both": 0.41
+        "key_only": 0.02,
+        "template_only": 0.0,
+        "both": 0.38
       }
     }
   },
   "table7": {
     "None": {
-      "asr_both": 0.37,
-      "fa": 0.04,
+      "asr_both": 0.41,
+      "fa": 0.03,
       "relative_drop": "--"
     },
     "Tool Allowlist (D1)": {
-      "asr_both": 0.27,
-      "fa": 0.03,
-      "relative_drop": "-27%"
+      "asr_both": 0.38,
+      "fa": 0.06,
+      "relative_drop": "-7%"
     },
     "Least Privilege (D2)": {
-      "asr_both": 0.21,
-      "fa": 0.06,
-      "relative_drop": "-43%"
+      "asr_both": 0.32,
+      "fa": 0.03,
+      "relative_drop": "-22%"
+    }
+  },
+  "paper_reference": {
+    "table1_both": {
+      "gemma-2b": {
+        "star": 0.2,
+        "chain": 0.1,
+        "dag": 0.4
+      },
+      "mistral-7b": {
+        "star": 0.4,
+        "chain": 0.4,
+        "dag": 0.1
+      },
+      "llama3-8b": {
+        "star": 0.2,
+        "chain": 0.4,
+        "dag": 0.4
+      }
+    },
+    "table2_full_both": {
+      "gemma-2b": {
+        "star": 0.6,
+        "chain": 0.8,
+        "dag": 1.0
+      },
+      "mistral-7b": {
+        "star": 0.9,
+        "chain": 1.0,
+        "dag": 1.0
+      },
+      "llama3-8b": {
+        "star": 0.7,
+        "chain": 0.8,
+        "dag": 1.0
+      }
     }
   }
 }
