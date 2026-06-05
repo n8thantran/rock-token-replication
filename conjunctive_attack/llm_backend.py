@@ -82,9 +82,9 @@ class LLMBackend:
 # Wrap: instruction wraps user content (high - harder to ignore)
 # Suffix: instruction after user content (lower - LLM may have already committed)
 SLOT_EFFECTIVENESS = {
-    "prefix": 0.7,
-    "wrap": 0.9,
-    "suffix": 0.5,
+    "prefix": 0.70,
+    "wrap": 0.95,
+    "suffix": 0.50,
 }
 
 
@@ -98,11 +98,11 @@ class MockLLMBackend:
     calibrated to match empirical observations from the paper.
     
     The base_activation_rate is the maximum activation probability when both
-    key and template are present. The actual rate is modulated by the template
-    slot effectiveness.
+    key and template are present AND the segment is routed to the compromised agent.
+    The actual rate is modulated by the template slot effectiveness.
     
     Parameters:
-        base_activation_rate: Maximum P(activate | key AND template, optimal slot)
+        base_activation_rate: Maximum P(activate | key AND template AND routed, optimal slot)
         template_only_false_positive: P(activate | template present, no key)
         key_only_false_positive: P(activate | key present, no template)
     """
@@ -131,9 +131,8 @@ class MockLLMBackend:
         has_template = "IMPORTANT SYSTEM INSTRUCTION" in prompt
         
         # Detect template slot from prompt structure
-        slot_effectiveness = 0.7  # default (prefix)
+        slot_effectiveness = SLOT_EFFECTIVENESS["prefix"]  # default
         if has_template:
-            # Check which slot was used based on prompt structure
             template_pos = prompt.find("IMPORTANT SYSTEM INSTRUCTION")
             user_content_markers = ["Find flights", "Check account", "Suggest nearby", 
                                      "rewards balance", "downtown"]
@@ -146,10 +145,8 @@ class MockLLMBackend:
             
             if user_pos >= 0 and template_pos >= 0:
                 if template_pos < user_pos:
-                    # Template before user content = prefix
                     slot_effectiveness = SLOT_EFFECTIVENESS["prefix"]
                 elif "User segment:" in prompt and template_pos > user_pos:
-                    # Check if template wraps or is suffix
                     end_marker = prompt.find("END INSTRUCTION")
                     if end_marker > 0 and end_marker > user_pos:
                         slot_effectiveness = SLOT_EFFECTIVENESS["wrap"]
