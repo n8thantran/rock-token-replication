@@ -1,1 +1,1 @@
-# Conjunctive Prompt Attacks in Multi-Agent LLM Systems
+"""Conjunctive Prompt Attacks in Multi-Agent LLM Systems."""
