@@ -5,14 +5,14 @@ Implements the coupled feature-topology ODE system:
   τ_feat * dH/dt = G_φ(H, A) - γ*H
   τ_topo * dU/dt = (1-λ)*U - U³ + F_θ(H)
 
-where A_ij = σ(U_ij/τ) * μ(t) * 1[(i,j) ∈ E_cand]
+where A_ij = σ(U_ij/τ) * 1[(i,j) ∈ E_cand]
 """
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_scatter import scatter_add, scatter_mean
-from torchdiffeq import odeint
+from torchdiffeq import odeint, odeint_adjoint
 import math
 
 
@@ -20,7 +20,7 @@ class ForceFieldMLP(nn.Module):
     """
     Topological force field F_θ(h_i, h_j) = s * tanh(MLP([h_i || h_j]))
     """
-    def __init__(self, in_dim, hidden_dim=64, num_layers=2, scale=0.5):
+    def __init__(self, in_dim, hidden_dim=64, num_layers=2, scale=1.0):
         super().__init__()
         self.scale = scale
         
@@ -42,33 +42,33 @@ class GraphNeuralOperator(nn.Module):
     """
     Graph neural operator G_φ(H, A).
     Diffusion-style: G_φ(H, A) = P*H*W - H
-    where P = D^{-1} * A_tilde (row-normalized adjacency with self-loops)
+    where P = D^{-1} * A (row-normalized weighted adjacency with self-loops)
+    W is a learnable weight matrix.
     """
-    def __init__(self, in_dim, out_dim=None):
+    def __init__(self, dim):
         super().__init__()
-        out_dim = out_dim or in_dim
-        self.weight = nn.Linear(in_dim, out_dim, bias=True)
+        self.weight = nn.Linear(dim, dim, bias=False)
     
     def forward(self, H, edge_index, edge_weight, num_nodes):
         src, dst = edge_index[0], edge_index[1]
         
-        # Add self-loops
+        # Add self-loops with weight 1
         self_loop_idx = torch.arange(num_nodes, device=H.device)
         all_src = torch.cat([src, self_loop_idx])
         all_dst = torch.cat([dst, self_loop_idx])
         all_weight = torch.cat([edge_weight, torch.ones(num_nodes, device=H.device)])
         
-        # Row-normalize (by destination)
+        # Row-normalize: P = D^{-1} A
         deg = scatter_add(all_weight, all_dst, dim=0, dim_size=num_nodes)
         deg_inv = 1.0 / (deg + 1e-10)
         norm_weight = all_weight * deg_inv[all_dst]
         
         # Message passing: P * H
         msg = H[all_src] * norm_weight.unsqueeze(-1)
-        agg = scatter_add(msg, all_dst, dim=0, dim_size=num_nodes)
+        PH = scatter_add(msg, all_dst, dim=0, dim_size=num_nodes)
         
-        # Apply weight and residual-like skip
-        out = self.weight(agg) - H
+        # G_φ(H, A) = W(PH) - H  (diffusion with learnable transform)
+        out = self.weight(PH) - H
         return out
 
 
@@ -78,9 +78,9 @@ class HGODEFunc(nn.Module):
     State: [H_flat, U] concatenated
     """
     def __init__(self, feat_dim, cand_edge_index, num_nodes,
-                 tau_feat=1.0, tau_topo=1.0, lam=0.5, gamma=0.1,
-                 gate_tau=0.1, force_scale=0.5, hidden_dim=64,
-                 no_hysteresis=False, dropout=0.0):
+                 tau_feat=1.0, tau_topo=1.0, lam=0.5, gamma=0.5,
+                 gate_tau=0.2, force_scale=1.0, hidden_dim=64,
+                 no_hysteresis=False, no_topo_search=False):
         super().__init__()
         self.feat_dim = feat_dim
         self.num_nodes = num_nodes
@@ -90,15 +90,19 @@ class HGODEFunc(nn.Module):
         self.gamma = gamma
         self.gate_tau = gate_tau
         self.no_hysteresis = no_hysteresis
-        self.dropout = dropout
+        self.no_topo_search = no_topo_search
         
         self.register_buffer('cand_edge_index', cand_edge_index)
         self.num_cand_edges = cand_edge_index.size(1)
         
         self.force_field = ForceFieldMLP(feat_dim, hidden_dim=hidden_dim, scale=force_scale)
-        self.graph_op = GraphNeuralOperator(feat_dim, feat_dim)
+        self.graph_op = GraphNeuralOperator(feat_dim)
+        
+        # NFE counter for debugging
+        self.nfe = 0
     
     def forward(self, t, state):
+        self.nfe += 1
         N, d = self.num_nodes, self.feat_dim
         E = self.num_cand_edges
         
@@ -112,13 +116,18 @@ class HGODEFunc(nn.Module):
         G_out = self.graph_op(H, self.cand_edge_index, A_eff, N)
         dH = (1.0 / self.tau_feat) * (G_out - self.gamma * H)
         
-        # Topology dynamics
+        # Topology dynamics: dU/dt = (1/τ_topo) * ((1-λ)*U - U³ + F)
         src, dst = self.cand_edge_index[0], self.cand_edge_index[1]
         F_force = self.force_field(H[src], H[dst])
         
-        if self.no_hysteresis:
+        if self.no_topo_search:
+            # No topology evolution
+            dU = torch.zeros_like(U)
+        elif self.no_hysteresis:
+            # Simple linear dynamics (no cubic term)
             dU = (1.0 / self.tau_topo) * (-U + F_force)
         else:
+            # Full hysteresis dynamics
             dU = (1.0 / self.tau_topo) * ((1.0 - self.lam) * U - U.pow(3) + F_force)
         
         dstate = torch.cat([dH.reshape(-1), dU])
@@ -131,12 +140,12 @@ class HGODE(nn.Module):
     """
     def __init__(self, in_dim, hidden_dim, out_dim, cand_edge_index, num_nodes,
                  orig_edge_index=None,
-                 tau_feat=1.0, tau_topo=1.0, lam=0.5, gamma=0.1,
-                 gate_tau=0.1, force_scale=0.5, T=1.0,
+                 tau_feat=1.0, tau_topo=1.0, lam=0.3, gamma=0.5,
+                 gate_tau=0.2, force_scale=1.0, T=1.0,
                  solver='dopri5', rtol=1e-5, atol=1e-5,
-                 beta=0.1, delta=0.05, force_hidden=64,
-                 use_encoder=True, no_hysteresis=False, dropout=0.0,
-                 u_init_orig=2.0, u_init_cand=-2.0):
+                 beta=0.1, delta=0.1, force_hidden=64,
+                 dropout=0.5, no_hysteresis=False, no_topo_search=False,
+                 use_adjoint=False):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.num_nodes = num_nodes
@@ -146,23 +155,19 @@ class HGODE(nn.Module):
         self.atol = atol
         self.beta = beta
         self.delta = delta
-        self.u_init_orig = u_init_orig
-        self.u_init_cand = u_init_cand
+        self.lam = lam
+        self.use_adjoint = use_adjoint
         
-        # F_crit = 2/(3*sqrt(3))
-        self.F_crit = 2.0 / (3.0 * math.sqrt(3.0))
+        # F_crit = 2/(3*sqrt(3)) * (1-λ)^(3/2)
+        self.F_crit = 2.0 / (3.0 * math.sqrt(3.0)) * (1.0 - lam) ** 1.5
         
-        # Encoder
-        self.use_encoder = use_encoder
-        if use_encoder:
-            self.encoder = nn.Sequential(
-                nn.Linear(in_dim, hidden_dim),
-                nn.ReLU(),
-                nn.Dropout(dropout),
-                nn.Linear(hidden_dim, hidden_dim)
-            )
-        else:
-            assert in_dim == hidden_dim
+        # Encoder: project features to hidden dim
+        self.encoder = nn.Sequential(
+            nn.Linear(in_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, hidden_dim)
+        )
         
         # ODE function
         self.ode_func = HGODEFunc(
@@ -177,7 +182,7 @@ class HGODE(nn.Module):
             force_scale=force_scale,
             hidden_dim=force_hidden,
             no_hysteresis=no_hysteresis,
-            dropout=dropout,
+            no_topo_search=no_topo_search,
         )
         
         # Decoder
@@ -188,7 +193,7 @@ class HGODE(nn.Module):
             nn.Linear(hidden_dim, out_dim)
         )
         
-        # Compute initial U values: mark original edges vs candidate-only edges
+        # Store candidate edge info
         self.register_buffer('cand_edge_index', cand_edge_index)
         
         # Create mask for original edges within candidate pool
@@ -205,33 +210,45 @@ class HGODE(nn.Module):
                     is_orig[i] = True
             self.register_buffer('is_orig_edge', is_orig)
         else:
-            # All edges are treated the same
             self.register_buffer('is_orig_edge', 
                                torch.ones(cand_edge_index.size(1), dtype=torch.bool))
+        
+        # Compute stable fixed point for initialization
+        self.u_stable = math.sqrt(1.0 - lam) if lam < 1.0 else 0.1
     
     def get_U0(self, device):
-        """Get initial U values with orig edges on and candidate edges off."""
-        U0 = torch.full((self.cand_edge_index.size(1),), self.u_init_cand, device=device)
-        U0[self.is_orig_edge] = self.u_init_orig
+        """Get initial U values: orig edges at +stable, candidate edges at -stable."""
+        U0 = torch.full((self.cand_edge_index.size(1),), -self.u_stable, device=device)
+        U0[self.is_orig_edge] = self.u_stable
         return U0
     
     def compute_margin_loss(self, H, labels, mask=None):
         """
         Compute force margin loss (Eq. 10).
+        Sample edges for efficiency.
         """
         src, dst = self.cand_edge_index[0], self.cand_edge_index[1]
-        h_src = H[src]
-        h_dst = H[dst]
+        
+        # Sample edges for efficiency
+        E = src.size(0)
+        if E > 10000:
+            idx = torch.randperm(E, device=src.device)[:10000]
+            src_s, dst_s = src[idx], dst[idx]
+        else:
+            src_s, dst_s = src, dst
+        
+        h_src = H[src_s]
+        h_dst = H[dst_s]
         
         F_ij = self.ode_func.force_field(h_src, h_dst)
         
-        label_src = labels[src]
-        label_dst = labels[dst]
+        label_src = labels[src_s]
+        label_dst = labels[dst_s]
         
         if mask is not None:
-            valid = mask[src] & mask[dst]
+            valid = mask[src_s] & mask[dst_s]
         else:
-            valid = torch.ones(src.size(0), dtype=torch.bool, device=src.device)
+            valid = torch.ones(src_s.size(0), dtype=torch.bool, device=src_s.device)
         
         same_label = (label_src == label_dst) & valid
         diff_label = (label_src != label_dst) & valid
@@ -247,25 +264,33 @@ class HGODE(nn.Module):
         return loss
     
     def forward(self, x, return_margin_data=False):
-        if self.use_encoder:
-            H0 = self.encoder(x)
-        else:
-            H0 = x
+        H0 = self.encoder(x)
         
         N, d = H0.shape
         
-        # Initialize U with original edges "on" and candidate edges "off"
+        # Initialize U
         U0 = self.get_U0(x.device)
         
         state0 = torch.cat([H0.reshape(-1), U0])
         
         t_span = torch.tensor([0.0, self.T], device=x.device)
         
-        state_T = odeint(
-            self.ode_func, state0, t_span,
-            method=self.solver,
-            rtol=self.rtol, atol=self.atol
-        )[-1]
+        self.ode_func.nfe = 0
+        
+        ode_solver = odeint_adjoint if self.use_adjoint else odeint
+        
+        if self.solver == 'dopri5':
+            state_T = ode_solver(
+                self.ode_func, state0, t_span,
+                method=self.solver,
+                rtol=self.rtol, atol=self.atol
+            )[-1]
+        else:
+            state_T = ode_solver(
+                self.ode_func, state0, t_span,
+                method=self.solver,
+                options={'step_size': self.T / 10}  # 10 steps for fixed-step solvers
+            )[-1]
         
         H_T = state_T[:N * d].reshape(N, d)
         
@@ -279,16 +304,13 @@ class HGODE(nn.Module):
 class HGODEForGraphClassification(nn.Module):
     """
     HGODE variant for graph-level tasks.
-    For graph-level tasks, candidate pool = original edges (no extra candidates 
-    since graphs are small and topology search happens within each graph).
     """
     def __init__(self, in_dim, hidden_dim, out_dim,
-                 tau_feat=1.0, tau_topo=1.0, lam=0.5, gamma=0.1,
-                 gate_tau=0.1, force_scale=0.5, T=1.0,
+                 tau_feat=1.0, tau_topo=1.0, lam=0.5, gamma=0.5,
+                 gate_tau=0.2, force_scale=1.0, T=1.0,
                  solver='dopri5', rtol=1e-5, atol=1e-5,
-                 beta=0.1, delta=0.05, force_hidden=64,
-                 no_hysteresis=False, dropout=0.0,
-                 num_hops=2, num_random=2):
+                 beta=0.1, delta=0.1, force_hidden=64,
+                 no_hysteresis=False, dropout=0.5):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.out_dim = out_dim
@@ -298,11 +320,10 @@ class HGODEForGraphClassification(nn.Module):
         self.atol = atol
         self.beta = beta
         self.delta = delta
+        self.lam = lam
         self.no_hysteresis = no_hysteresis
-        self.num_hops = num_hops
-        self.num_random = num_random
         
-        self.F_crit = 2.0 / (3.0 * math.sqrt(3.0))
+        self.F_crit = 2.0 / (3.0 * math.sqrt(3.0)) * (1.0 - lam) ** 1.5
         
         # Shared modules
         self.encoder = nn.Sequential(
@@ -313,13 +334,14 @@ class HGODEForGraphClassification(nn.Module):
         )
         
         self.force_field = ForceFieldMLP(hidden_dim, hidden_dim=force_hidden, scale=force_scale)
-        self.graph_op = GraphNeuralOperator(hidden_dim, hidden_dim)
+        self.graph_op = GraphNeuralOperator(hidden_dim)
         
         self.tau_feat = tau_feat
         self.tau_topo = tau_topo
-        self.lam = lam
         self.gamma = gamma
         self.gate_tau = gate_tau
+        
+        self.u_stable = math.sqrt(1.0 - lam) if lam < 1.0 else 0.1
         
         # Readout + decoder
         self.decoder = nn.Sequential(
@@ -359,8 +381,8 @@ class HGODEForGraphClassification(nn.Module):
         
         num_nodes = x.size(0)
         E = edge_index.size(1)
-        # For graph tasks, start with all edges "on" (using original edges as candidate pool)
-        U0 = torch.ones(E, device=x.device) * 2.0  # positive init -> edges enabled
+        # Initialize all edges at positive stable point
+        U0 = torch.ones(E, device=x.device) * self.u_stable
         state0 = torch.cat([H0.reshape(-1), U0])
         
         def func(t, state):
