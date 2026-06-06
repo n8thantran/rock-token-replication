@@ -1,0 +1,38 @@
+{
+  "dataset": "cora",
+  "mean": 0.7466667095820109,
+  "std": 0.015839480551957587,
+  "results": [
+    0.737000048160553,
+    0.734000027179718,
+    0.7690000534057617
+  ],
+  "ablation": "no_topo_search",
+  "hyperparameters": {
+    "dataset": "cora",
+    "seed": 42,
+    "num_seeds": 3,
+    "hidden_dim": 256,
+    "dropout": 0.2,
+    "lam": 0.1,
+    "tau": 0.2,
+    "tau_feat": 1.0,
+    "tau_topo": 1.0,
+    "gamma": 0.5,
+    "s": 1.0,
+    "delta": 0.1,
+    "beta": 0.1,
+    "k_2hop": 4,
+    "random_ratio": 0.001,
+    "lr": 0.001,
+    "wd": 0.0001,
+    "epochs": 300,
+    "batch_size": 64,
+    "num_steps": 10,
+    "T": 0.6,
+    "patience": 100,
+    "no_hysteresis": false,
+    "no_topo_search": true,
+    "no_force_margin": false
+  }
+}
