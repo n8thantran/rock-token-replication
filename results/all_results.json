@@ -4,40 +4,40 @@
       "star": {
         "clean": 0.0,
         "key_only": 0.0,
-        "template_only": 0.01,
-        "both": 0.3
+        "template_only": 0.0,
+        "both": 0.39
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.0,
         "template_only": 0.01,
-        "both": 0.36
+        "both": 0.28
       },
       "dag": {
         "clean": 0.0,
-        "key_only": 0.0,
-        "template_only": 0.01,
-        "both": 0.27
+        "key_only": 0.01,
+        "template_only": 0.0,
+        "both": 0.39
       }
     },
     "mistral-7b": {
       "star": {
         "clean": 0.0,
-        "key_only": 0.02,
+        "key_only": 0.01,
         "template_only": 0.01,
-        "both": 0.53
+        "both": 0.38
       },
       "chain": {
         "clean": 0.0,
         "key_only": 0.01,
-        "template_only": 0.0,
-        "both": 0.28
+        "template_only": 0.02,
+        "both": 0.39
       },
       "dag": {
         "clean": 0.0,
-        "key_only": 0.0,
-        "template_only": 0.02,
-        "both": 0.39
+        "key_only": 0.03,
+        "template_only": 0.01,
+        "both": 0.35
       }
     },
     "llama3-8b": {
@@ -45,19 +45,19 @@
         "clean": 0.0,
         "key_only": 0.0,
         "template_only": 0.0,
-        "both": 0.39
+        "both": 0.3
       },
       "chain": {
         "clean": 0.0,
-        "key_only": 0.0,
-        "template_only": 0.0,
-        "both": 0.34
+        "key_only": 0.01,
+        "template_only": 0.02,
+        "both": 0.27
       },
       "dag": {
         "clean": 0.0,
-        "key_only": 0.02,
+        "key_only": 0.0,
         "template_only": 0.01,
-        "both": 0.31
+        "both": 0.32
       }
     }
   },
@@ -68,19 +68,143 @@
           "clean": 0.0,
           "key_only": 0.01,
           "template_only": 0.01,
-          "both": 0.5
+          "both": 0.54
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.05,
+          "key_only": 0.01,
           "template_only": 0.0,
+          "both": 0.55
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.01,
           "both": 0.6
+        }
+      },
+      "chain": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.01,
+          "template_only": 0.0,
+          "both": 0.49
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.0,
+          "both": 0.48
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.01,
+          "both": 0.43
+        }
+      },
+      "dag": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.0,
+          "both": 0.46
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.0,
+          "template_only": 0.04,
+          "both": 0.53
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.01,
+          "both": 0.49
+        }
+      }
+    },
+    "mistral-7b": {
+      "star": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.01,
+          "template_only": 0.03,
+          "both": 0.64
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.02,
+          "both": 0.66
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.02,
+          "template_only": 0.03,
+          "both": 0.68
+        }
+      },
+      "chain": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.01,
+          "template_only": 0.02,
+          "both": 0.52
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.03,
+          "template_only": 0.0,
+          "both": 0.41
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.01,
+          "template_only": 0.03,
+          "both": 0.47
+        }
+      },
+      "dag": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.03,
+          "template_only": 0.03,
+          "both": 0.54
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.06,
+          "template_only": 0.0,
+          "both": 0.62
         },
         "full": {
           "clean": 0.0,
           "key_only": 0.03,
+          "template_only": 0.0,
+          "both": 0.57
+        }
+      }
+    },
+    "llama3-8b": {
+      "star": {
+        "routing": {
+          "clean": 0.0,
+          "key_only": 0.0,
           "template_only": 0.01,
-          "both": 0.5
+          "both": 0.67
+        },
+        "routing+key": {
+          "clean": 0.0,
+          "key_only": 0.01,
+          "template_only": 0.03,
+          "both": 0.6
+        },
+        "full": {
+          "clean": 0.0,
+          "key_only": 0.01,
+          "template_only": 0.02,
+          "both": 0.65
         }
       },
       "chain": {
@@ -92,159 +216,35 @@
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.01,
-          "both": 0.36
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.0,
-          "both": 0.44
-        }
-      },
-      "dag": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.03,
-          "both": 0.52
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.01,
+          "key_only": 0.0,
           "template_only": 0.02,
-          "both": 0.5
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.01,
-          "both": 0.45
-        }
-      }
-    },
-    "mistral-7b": {
-      "star": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.0,
-          "both": 0.58
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.01,
-          "both": 0.58
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.03,
-          "both": 0.74
-        }
-      },
-      "chain": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.03,
-          "template_only": 0.01,
-          "both": 0.57
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.01,
-          "both": 0.51
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.01,
-          "both": 0.52
-        }
-      },
-      "dag": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.02,
-          "template_only": 0.03,
-          "both": 0.53
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.01,
-          "both": 0.61
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.02,
-          "both": 0.49
-        }
-      }
-    },
-    "llama3-8b": {
-      "star": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.04,
-          "template_only": 0.01,
-          "both": 0.57
-        },
-        "routing+key": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.0,
-          "both": 0.63
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.01,
-          "template_only": 0.01,
-          "both": 0.54
-        }
-      },
-      "chain": {
-        "routing": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.01,
           "both": 0.6
         },
-        "routing+key": {
+        "full": {
           "clean": 0.0,
           "key_only": 0.01,
           "template_only": 0.02,
-          "both": 0.43
-        },
-        "full": {
-          "clean": 0.0,
-          "key_only": 0.0,
-          "template_only": 0.0,
-          "both": 0.5
+          "both": 0.45
         }
       },
       "dag": {
         "routing": {
           "clean": 0.0,
           "key_only": 0.01,
-          "template_only": 0.01,
-          "both": 0.52
+          "template_only": 0.0,
+          "both": 0.51
         },
         "routing+key": {
           "clean": 0.0,
-          "key_only": 0.01,
+          "key_only": 0.0,
           "template_only": 0.0,
-          "both": 0.56
+          "both": 0.6
         },
         "full": {
           "clean": 0.0,
-          "key_only": 0.0,
+          "key_only": 0.02,
           "template_only": 0.01,
-          "both": 0.58
+          "both": 0.56
         }
       }
     }
@@ -252,38 +252,38 @@
   "table3": {
     "gemma-2b": {
       "before": {
-        "min": 0.27,
-        "mean": 0.31,
-        "max": 0.36
+        "min": 0.28,
+        "mean": 0.35333333333333333,
+        "max": 0.39
       },
       "after": {
-        "min": 0.44,
-        "mean": 0.4633333333333333,
-        "max": 0.5
+        "min": 0.43,
+        "mean": 0.5066666666666667,
+        "max": 0.6
       }
     },
     "mistral-7b": {
       "before": {
-        "min": 0.28,
-        "mean": 0.4000000000000001,
-        "max": 0.53
+        "min": 0.35,
+        "mean": 0.37333333333333335,
+        "max": 0.39
       },
       "after": {
-        "min": 0.49,
-        "mean": 0.5833333333333334,
-        "max": 0.74
+        "min": 0.47,
+        "mean": 0.5733333333333333,
+        "max": 0.68
       }
     },
     "llama3-8b": {
       "before": {
-        "min": 0.31,
-        "mean": 0.3466666666666667,
-        "max": 0.39
+        "min": 0.27,
+        "mean": 0.2966666666666667,
+        "max": 0.32
       },
       "after": {
-        "min": 0.5,
-        "mean": 0.54,
-        "max": 0.58
+        "min": 0.45,
+        "mean": 0.5533333333333333,
+        "max": 0.65
       }
     }
   },
@@ -311,9 +311,9 @@
         "max": 0.7
       },
       "empirical": {
-        "min": 0.33,
+        "min": 0.34,
         "mean": 0.51,
-        "max": 0.59
+        "max": 0.6
       }
     },
     "chain": {
@@ -323,9 +323,9 @@
         "max": 0.7
       },
       "empirical": {
-        "min": 0.27,
-        "mean": 0.43,
-        "max": 0.53
+        "min": 0.31,
+        "mean": 0.41,
+        "max": 0.47
       }
     },
     "dag": {
@@ -335,9 +335,9 @@
         "max": 0.7
       },
       "empirical": {
-        "min": 0.35,
+        "min": 0.38,
         "mean": 0.48,
-        "max": 0.57
+        "max": 0.54
       }
     }
   },
@@ -346,76 +346,76 @@
       "rho": 0.0,
       "clean": 0.0,
       "key_only": 0.01,
-      "template_only": 0.02,
-      "both": 0.33,
+      "template_only": 0.01,
+      "both": 0.31,
       "fa": 0.02
     },
     "biased": {
       "rho": 0.8,
       "clean": 0.0,
-      "key_only": 0.02,
-      "template_only": 0.02,
-      "both": 0.54,
-      "fa": 0.03
+      "key_only": 0.01,
+      "template_only": 0.01,
+      "both": 0.53,
+      "fa": 0.02
     }
   },
   "table6": {
     "Llama-4-Scout-17B": {
       "0.0": {
         "clean": 0.0,
-        "key_only": 0.01,
-        "template_only": 0.02,
+        "key_only": 0.0,
+        "template_only": 0.03,
         "both": 0.32
       },
       "0.4": {
         "clean": 0.0,
         "key_only": 0.02,
-        "template_only": 0.02,
-        "both": 0.53
+        "template_only": 0.01,
+        "both": 0.51
       },
       "0.8": {
         "clean": 0.0,
-        "key_only": 0.04,
-        "template_only": 0.01,
-        "both": 0.52
+        "key_only": 0.02,
+        "template_only": 0.02,
+        "both": 0.53
       }
     },
     "GPT-5-mini": {
       "0.0": {
         "clean": 0.0,
-        "key_only": 0.02,
+        "key_only": 0.01,
         "template_only": 0.02,
-        "both": 0.32
+        "both": 0.39
       },
       "0.4": {
         "clean": 0.0,
         "key_only": 0.02,
-        "template_only": 0.02,
-        "both": 0.6
+        "template_only": 0.03,
+        "both": 0.54
       },
       "0.8": {
         "clean": 0.0,
         "key_only": 0.02,
-        "template_only": 0.03,
-        "both": 0.55
+        "template_only": 0.01,
+        "both": 0.52
       }
     }
   },
   "table7": {
     "None": {
-      "asr_both": 0.54,
+      "asr_both": 0.56,
       "fa": 0.04,
       "relative_drop": "--"
     },
     "Tool Allowlist (D1)": {
-      "asr_both": 0.42,
-      "fa": 0.04,
-      "relative_drop": "-22%"
+      "asr_both": 0.4,
+      "fa": 0.01,
+      "relative_drop": "-29%"
     },
     "Least Privilege (D2)": {
-      "asr_both": 0.44,
-      "fa": 0.03,
-      "relative_drop": "-19%"
+      "asr_both": 0.43,
+      "fa": 0.04,
+      "relative_drop": "-23%"
     }
   },
   "paper_reference": {
