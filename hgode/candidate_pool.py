@@ -4,7 +4,7 @@ Constructs E_cand from: observed edges, 2-hop neighbors, random pairs.
 """
 import torch
 import numpy as np
-from torch_geometric.utils import to_scipy_sparse_matrix, add_self_loops
+from torch_geometric.utils import to_scipy_sparse_matrix
 from scipy.sparse import csr_matrix
 
 
@@ -18,8 +18,8 @@ def build_candidate_pool(edge_index, num_nodes, num_hops=2, num_random=5, includ
     Args:
         edge_index: [2, E] tensor of observed edges
         num_nodes: number of nodes
-        num_hops: number of hops for neighborhood expansion
-        num_random: number of random neighbors per node
+        num_hops: number of hops for neighborhood expansion (0 = no multi-hop)
+        num_random: number of random neighbors per node (0 = no random)
         include_observed: whether to include observed edges
     
     Returns:
@@ -30,14 +30,14 @@ def build_candidate_pool(edge_index, num_nodes, num_hops=2, num_random=5, includ
     
     # 1. Observed edges
     if include_observed:
-        for i in range(edge_index.size(1)):
-            src, dst = edge_index[0, i].item(), edge_index[1, i].item()
+        ei_cpu = edge_index.cpu()
+        for i in range(ei_cpu.size(1)):
+            src, dst = ei_cpu[0, i].item(), ei_cpu[1, i].item()
             edge_set.add((src, dst))
     
     # 2. Multi-hop neighbors
     if num_hops >= 2:
-        # Build adjacency matrix
-        adj = to_scipy_sparse_matrix(edge_index, num_nodes=num_nodes)
+        adj = to_scipy_sparse_matrix(edge_index.cpu(), num_nodes=num_nodes)
         adj_power = adj.copy()
         for _ in range(num_hops - 1):
             adj_power = adj_power @ adj
@@ -67,22 +67,38 @@ def build_candidate_pool(edge_index, num_nodes, num_hops=2, num_random=5, includ
     return cand_edge_index
 
 
-def build_candidate_pool_simple(edge_index, num_nodes, num_random=5):
+def build_candidate_pool_fast(edge_index, num_nodes, num_hops=2, num_random=5, include_observed=True):
     """
-    Simplified candidate pool: observed edges + random pairs.
-    More memory efficient for large graphs.
+    Faster candidate pool construction using sparse matrix operations.
+    Better for larger graphs.
     """
     device = edge_index.device
     
-    # Start with observed edges
-    edges_src = [edge_index[0]]
-    edges_dst = [edge_index[1]]
+    edges_src = []
+    edges_dst = []
     
-    # Add random pairs
+    # 1. Observed edges
+    if include_observed:
+        edges_src.append(edge_index[0].cpu())
+        edges_dst.append(edge_index[1].cpu())
+    
+    # 2. Multi-hop neighbors
+    if num_hops >= 2:
+        adj = to_scipy_sparse_matrix(edge_index.cpu(), num_nodes=num_nodes)
+        adj_power = adj.copy()
+        for _ in range(num_hops - 1):
+            adj_power = adj_power @ adj
+        # Binarize
+        adj_power = (adj_power > 0).astype(float)
+        rows, cols = adj_power.nonzero()
+        mask = rows != cols  # no self-loops
+        edges_src.append(torch.tensor(rows[mask], dtype=torch.long))
+        edges_dst.append(torch.tensor(cols[mask], dtype=torch.long))
+    
+    # 3. Random pairs
     if num_random > 0:
-        rand_src = torch.randint(0, num_nodes, (num_nodes * num_random,), device=device)
-        rand_dst = torch.randint(0, num_nodes, (num_nodes * num_random,), device=device)
-        # Remove self-loops
+        rand_src = torch.randint(0, num_nodes, (num_nodes * num_random,))
+        rand_dst = torch.randint(0, num_nodes, (num_nodes * num_random,))
         mask = rand_src != rand_dst
         edges_src.append(rand_src[mask])
         edges_dst.append(rand_dst[mask])
@@ -94,4 +110,4 @@ def build_candidate_pool_simple(edge_index, num_nodes, num_random=5):
     # Remove duplicates
     cand_edge_index = torch.unique(cand_edge_index, dim=1)
     
-    return cand_edge_index
+    return cand_edge_index.to(device)
