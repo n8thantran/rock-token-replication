@@ -1,0 +1,40 @@
+{
+  "dataset": "cora",
+  "test_scores": [
+    0.398
+  ],
+  "mean": 0.398,
+  "std": 0.0,
+  "config": {
+    "dataset": "cora",
+    "data_dir": "./data",
+    "num_seeds": 1,
+    "eval_every": 5,
+    "solver": "euler",
+    "rtol": 1e-05,
+    "atol": 1e-05,
+    "force_hidden": 64,
+    "hidden_dim": 64,
+    "lr": 0.005,
+    "weight_decay": 0.0005,
+    "lam": 0.2,
+    "gate_tau": 0.25,
+    "force_scale": 1.0,
+    "delta": 0.1,
+    "beta": 0.1,
+    "tau_feat": 1.0,
+    "tau_topo": 1.0,
+    "gamma": 0.5,
+    "T": 0.6,
+    "num_hops": 2,
+    "num_random": 3,
+    "epochs": 200,
+    "patience": 50,
+    "min_epochs": 100,
+    "dropout": 0.5,
+    "no_hysteresis": false,
+    "no_topo_search": true,
+    "no_force_margin": false,
+    "output_dir": "./results"
+  }
+}

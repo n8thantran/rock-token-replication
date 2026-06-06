@@ -12,10 +12,13 @@ import torch.nn.functional as F
 from torch_geometric.datasets import Planetoid, WikipediaNetwork
 from torch_geometric.transforms import NormalizeFeatures
 from torch_scatter import scatter_add
-from ogb.nodeproppred import PygNodePropPredDataset, Evaluator
-from model import HGODE
-from candidate_pool import build_candidate_pool
 import math
+
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from model import HGODE
+from candidate_pool import build_candidate_pool, build_candidate_pool_fast
 
 
 def load_cora(data_dir='./data'):
@@ -46,20 +49,19 @@ def load_chameleon(data_dir='./data'):
 
 
 def load_ogbn_proteins(data_dir='./data'):
+    from ogb.nodeproppred import PygNodePropPredDataset
     dataset = PygNodePropPredDataset(name='ogbn-proteins', root=data_dir)
     data = dataset[0]
     split_idx = dataset.get_idx_split()
     
     # ogbn-proteins: multi-label (112 tasks); features are edge features
-    # Need to create node features from edge features
-    # Standard approach: aggregate edge features to nodes
     row, col = data.edge_index
     edge_feat = data.edge_attr  # [E, 8]
     
     # Average edge features per destination node
     node_feat = scatter_add(edge_feat, col, dim=0, dim_size=data.num_nodes)
     deg = scatter_add(torch.ones(row.size(0), device=row.device), col, dim=0, dim_size=data.num_nodes).unsqueeze(-1)
-    node_feat = node_feat / (deg + 1e-10)  # [N, 8]
+    node_feat = node_feat / (deg + 1e-10)
     data.x = node_feat
     
     # Masks
@@ -84,7 +86,6 @@ def train_epoch(model, data, optimizer, args, device):
     
     # Task loss
     if args.dataset == 'ogbn-proteins':
-        # Multi-label BCE
         loss_task = F.binary_cross_entropy_with_logits(
             logits[data.train_mask], data.y[data.train_mask].float().to(device)
         )
@@ -93,7 +94,7 @@ def train_epoch(model, data, optimizer, args, device):
     
     # Margin loss
     loss_margin = torch.tensor(0.0, device=device)
-    if args.beta > 0 and args.dataset != 'ogbn-proteins':
+    if args.beta > 0 and not args.no_force_margin:
         loss_margin = model.compute_margin_loss(
             H_T, data.y.to(device), mask=data.train_mask.to(device)
         )
@@ -119,7 +120,6 @@ def evaluate(model, data, device, dataset_name='cora'):
         if dataset_name == 'ogbn-proteins':
             y_pred = logits[mask].sigmoid()
             y_true = data.y[mask].float().to(device)
-            # ROC-AUC
             from sklearn.metrics import roc_auc_score
             try:
                 score = roc_auc_score(y_true.cpu().numpy(), y_pred.cpu().numpy(), average='macro')
@@ -155,11 +155,14 @@ def run_experiment(args, seed):
     data = data.to(device)
     
     # Build candidate pool
-    cand_edge_index = build_candidate_pool(
-        data.edge_index, data.num_nodes,
-        k_2hop=args.k_2hop,
-        random_ratio=args.random_ratio
-    ).to(device)
+    if args.no_topo_search:
+        cand_edge_index = data.edge_index
+    else:
+        cand_edge_index = build_candidate_pool_fast(
+            data.edge_index, data.num_nodes,
+            num_hops=args.num_hops,
+            num_random=args.num_random
+        ).to(device)
     
     print(f"[Seed {seed}] Nodes: {data.num_nodes}, "
           f"Original edges: {data.edge_index.size(1)}, "
@@ -171,6 +174,7 @@ def run_experiment(args, seed):
         hidden_dim=args.hidden_dim,
         out_dim=num_classes,
         cand_edge_index=cand_edge_index,
+        orig_edge_index=data.edge_index,
         num_nodes=data.num_nodes,
         tau_feat=args.tau_feat,
         tau_topo=args.tau_topo,
@@ -185,6 +189,8 @@ def run_experiment(args, seed):
         beta=args.beta,
         delta=args.delta,
         force_hidden=args.force_hidden,
+        no_hysteresis=args.no_hysteresis,
+        dropout=args.dropout,
     ).to(device)
     
     num_params = sum(p.numel() for p in model.parameters())
@@ -193,7 +199,7 @@ def run_experiment(args, seed):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
     
-    best_val = -float('inf') if args.dataset != 'zinc' else float('inf')
+    best_val = -float('inf')
     best_test = 0.0 
     patience_counter = 0
     
@@ -238,21 +244,21 @@ def get_default_args(dataset):
             hidden_dim=256, lr=5e-4, weight_decay=5e-4,
             lam=0.2, gate_tau=0.25, force_scale=1.0, delta=0.1, beta=0.1,
             tau_feat=1.0, tau_topo=1.0, gamma=0.5, T=0.6,
-            k_2hop=4, random_ratio=0.001,
+            num_hops=2, num_random=3,
             epochs=300, patience=50, min_epochs=100, dropout=0.5,
         ),
         'chameleon': dict(
             hidden_dim=256, lr=5e-4, weight_decay=5e-4,
             lam=0.5, gate_tau=0.08, force_scale=1.5, delta=0.25, beta=0.4,
             tau_feat=1.0, tau_topo=1.0, gamma=0.5, T=0.6,
-            k_2hop=8, random_ratio=0.005,
+            num_hops=2, num_random=5,
             epochs=300, patience=50, min_epochs=100, dropout=0.5,
         ),
         'ogbn-proteins': dict(
             hidden_dim=256, lr=1e-3, weight_decay=0,
             lam=0.6, gate_tau=0.08, force_scale=1.5, delta=0.25, beta=0.2,
             tau_feat=1.0, tau_topo=0.5, gamma=0.5, T=0.6,
-            k_2hop=4, random_ratio=0.001,
+            num_hops=2, num_random=3,
             epochs=200, patience=30, min_epochs=50, dropout=0.2,
         ),
     }
@@ -284,8 +290,8 @@ def main():
     parser.add_argument('--tau_topo', type=float, default=None)
     parser.add_argument('--gamma', type=float, default=None)
     parser.add_argument('--T', type=float, default=None)
-    parser.add_argument('--k_2hop', type=int, default=None)
-    parser.add_argument('--random_ratio', type=float, default=None)
+    parser.add_argument('--num_hops', type=int, default=None)
+    parser.add_argument('--num_random', type=int, default=None)
     parser.add_argument('--epochs', type=int, default=None)
     parser.add_argument('--patience', type=int, default=None)
     parser.add_argument('--min_epochs', type=int, default=None)
@@ -312,9 +318,6 @@ def main():
     # Apply ablation flags
     if args.no_force_margin:
         args.beta = 0.0
-    if args.no_topo_search:
-        args.k_2hop = 0
-        args.random_ratio = 0.0
     
     print(f"=== HGODE Node Classification on {args.dataset} ===")
     print(f"Config: {vars(args)}")
